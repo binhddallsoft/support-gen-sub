@@ -135,3 +135,21 @@ def test_da_cai_nghia_la_bo_cai_da_chay_toi_cuoi(src: str) -> None:
         "hồ sơ cai-dat.json phải được ghi SAU bước cuối cùng của bộ cài"
     )
 
+
+def test_so_buoc_ghi_tren_man_hinh_dung_voi_so_buoc_that() -> None:
+    """Bộ cài từng in "Bước 9/8" ở bước cuối."""
+    cai_dat = (ROOT / "installer" / "CaiDat.command").read_text(encoding="utf-8")
+    so_buoc = sum(1 for dong in cai_dat.splitlines() if dong.startswith('buoc "'))
+    assert f"TONG={so_buoc}" in cai_dat
+
+
+def test_buoc_tai_mo_hinh_khong_im_lang() -> None:
+    """Lần cài thật trên iMac: cửa sổ đứng im hàng chục phút lúc tải 3GB, kèm một
+    cảnh báo tiếng Anh có chữ error. faster-whisper tắt thanh tiến trình, và Python
+    gom chữ trong bộ đệm khi đầu ra đi qua tee. Bộ cài phải tự báo tiến trình."""
+    cai_dat = (ROOT / "installer" / "CaiDat.command").read_text(encoding="utf-8")
+    khoi = cai_dat[cai_dat.index("<<'PYCODE'") - 200 : cai_dat.index(chr(10) + "PYCODE" + chr(10))]
+    assert '"$VPY" -u -' in khoi, "thiếu -u: dòng đang tải nằm im trong bộ đệm"
+    assert 'getLogger("faster_whisper").setLevel(logging.CRITICAL)' in khoi
+    assert "threading.Thread" in khoi and "Đã tải" in khoi, "phải tự in tiến trình trong lúc tải"
+

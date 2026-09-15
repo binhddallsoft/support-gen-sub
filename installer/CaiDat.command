@@ -61,7 +61,7 @@ KHOIDONG="$SCRIPT_DIR/KhoiDong.command"
 
 MODEL_MAC_DINH="large-v3-turbo"
 
-TONG=8
+TONG=9
 STEP=0
 CO_MAU=0
 CO_BAN_PHIM=0
@@ -629,7 +629,7 @@ else
 fi
 
 # =========================================================================== #
-buoc "Tải mô hình nghe (bộ não nhận dạng giọng nói)" "5-20 phút, ~1.6GB"
+buoc "Tải mô hình nghe (bộ não nhận dạng giọng nói)" "5-20 phút, 0.5-3GB tuỳ lựa chọn"
 # =========================================================================== #
 
 # App tìm mô hình ở ~/Library/Caches/SrtGen/models, còn ta muốn mọi thứ nằm
@@ -701,38 +701,68 @@ GIAITHICHMODEL
     if [ -z "$MODEL_CHON" ]; then
         nhac "Chưa tải mô hình. Lần đầu tạo phụ đề, app sẽ tự tải và báo tiến trình."
     else
-        tin "Đang chuẩn bị mô hình “${MODEL_CHON}”. Nếu phải tải, sẽ có thanh tiến trình."
+        tin "Đang chuẩn bị mô hình “${MODEL_CHON}”."
         echo
         TRANG_THAI=0
         # PYTHONIOENCODING: khi app được mở từ biểu tượng trên Desktop, macOS
         # không truyền biến ngôn ngữ vào, và mấy dòng thông báo tiếng Việt bên
         # dưới có thể làm Python nổ ngay lúc in ra. Ép UTF-8 là hết chuyện.
-        HF_HUB_DISABLE_TELEMETRY=1 PYTHONIOENCODING=utf-8 \
-            "$VPY" - "$MODEL_CHON" "$MODEL_DIR" <<'PYCODE' || TRANG_THAI=$?
-"""Tải một mô hình Whisper về thư mục của SrtGen.
+        # -u: đầu ra của cả file này đi qua `tee` để ghi nhật ký, tức là một
+        # đường ống, và Python gom chữ lại rồi mới in khi ghi vào đường ống.
+        # Không có -u thì dòng "đang tải" nằm im trong bộ đệm suốt lúc tải 3GB.
+        HF_HUB_DISABLE_TELEMETRY=1 HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_DISABLE_SYMLINKS_WARNING=1 \
+        HF_HUB_DISABLE_IMPLICIT_TOKEN=1 PYTHONIOENCODING=utf-8 \
+            "$VPY" -u - "$MODEL_CHON" "$MODEL_DIR" <<'PYCODE' || TRANG_THAI=$?
+"""Tải một mô hình Whisper về thư mục của SrtGen, có báo tiến trình.
 
-Ba việc mà bản trước không làm, và đều là việc người dùng cuối thấy được:
+Lần cài thật đầu tiên trên iMac cho thấy bản trước trông y như bị treo:
 
-1. Kiểm tra toàn vẹn trước khi tin là "đã có". Một thư mục mô hình tải dở vẫn
-   trông y hệt thư mục tải xong, nhưng lúc chạy sẽ nổ giữa chừng — tức là hỏng
-   sau khi người dùng đã chờ 20 phút.
-2. Tải nối tiếp. huggingface_hub giữ phần đã tải trong thư mục blobs, nên gọi
-   lại là nó chạy tiếp từ chỗ đứt chứ không tải lại từ đầu.
-3. Thử nhiều nguồn cho large-v3-turbo: tên này chỉ có ở faster-whisper đời mới,
-   máy nào cài bản cũ hơn thì lui về kho chứa trên Hugging Face.
+* Hỏi thử "máy có sẵn mô hình chưa" thì faster-whisper in một cảnh báo tiếng
+  Anh dài ("An error occured while synchronizing the model…") mỗi khi CHƯA có.
+  Vô hại, nhưng người dùng đọc thấy chữ "error" và tưởng hỏng.
+* Lúc tải thật, faster-whisper TẮT thanh tiến trình của huggingface_hub, và
+  dòng "đang tải" của bộ cài bị giữ trong bộ đệm. Kết quả: cửa sổ đứng im
+  hàng chục phút trong lúc máy tải 3GB.
+
+Nên file này tự báo tiến trình, cùng cách chặng S2 của app đang làm: tải trong
+một luồng riêng, còn luồng chính cứ vài giây đo dung lượng thư mục của đúng mô
+hình đó. Đo dung lượng thì phiên bản thư viện nào cũng đúng, và tải dở lần
+trước cũng được tính vào (huggingface_hub tải tiếp từ chỗ đứt).
 """
+import logging
 import sys
+import threading
+import time
 from pathlib import Path
 
 ten_model = sys.argv[1]
 thu_muc = Path(sys.argv[2])
 thu_muc.mkdir(parents=True, exist_ok=True)
 
+
+def noi(chu: str = "") -> None:
+    print(chu, flush=True)
+
+
 try:
     from faster_whisper import download_model
 except Exception as err:  # thiếu thư viện: bước trên đã báo rồi, đừng báo lại kiểu khó hiểu
-    print(f"[thiếu thư viện] {err}")
+    noi(f"[thiếu thư viện] {err}")
     raise SystemExit(3)
+
+# Tắt cảnh báo "An error occured while synchronizing…" của lần hỏi thử bên dưới,
+# và mấy lời nhắc tiếng Anh của huggingface_hub ("You are sending unauthenticated
+# requests…"): đều vô hại, nhưng người dùng thấy chữ Warning là tưởng hỏng.
+logging.getLogger("faster_whisper").setLevel(logging.CRITICAL)
+logging.getLogger("huggingface_hub").setLevel(logging.ERROR)
+import warnings  # noqa: E402
+
+warnings.filterwarnings("ignore")
+
+try:
+    from faster_whisper.utils import _MODELS as TEN_KHO
+except Exception:
+    TEN_KHO = {}
 
 NGUON = {
     "large-v3-turbo": [
@@ -741,6 +771,8 @@ NGUON = {
         "mobiuslabsgmbh/faster-whisper-large-v3-turbo",
     ],
 }
+#: Khớp `size_mb` trong srtgen/config/default.yaml.
+DUNG_LUONG_MB = {"large-v3-turbo": 1620, "large-v3": 3090, "medium": 1530, "small": 484}
 ung_vien = NGUON.get(ten_model, [ten_model])
 
 
@@ -757,6 +789,37 @@ def du_file(duong_dan: str) -> bool:
     return True
 
 
+def thu_muc_kho(ten: str) -> Path | None:
+    """Thư mục cache của đúng mô hình này (models--Systran--faster-whisper-large-v3)."""
+    kho = ten if "/" in ten else TEN_KHO.get(ten)
+    return thu_muc / ("models--" + kho.replace("/", "--")) if kho else None
+
+
+def dung_luong(d: Path | None) -> int:
+    """Số byte thật trong thư mục. Bỏ qua lối tắt: thư mục snapshots toàn là lối
+    tắt trỏ về blobs, đếm cả hai là đếm đôi."""
+    if d is None or not d.exists():
+        return 0
+    tong = 0
+    for p in d.rglob("*"):
+        try:
+            if p.is_symlink() or not p.is_file():
+                continue
+            tong += p.stat().st_size
+        except OSError:
+            pass
+    return tong
+
+
+def gon(n: float) -> str:
+    # Mạng chậm dưới 1 MB/giây mà in "0 MB/giây" thì đọc lên như máy đã đứng.
+    if n >= 1024 ** 3:
+        return f"{n / 1024 ** 3:.2f} GB"
+    if n >= 1024 ** 2:
+        return f"{n / 1024 ** 2:.0f} MB"
+    return f"{max(1, round(n / 1024))} KB"
+
+
 # Hỏi trước xem đã có sẵn trong máy chưa: rẻ hơn nhiều so với việc gọi ra mạng.
 for ten in ung_vien:
     try:
@@ -764,23 +827,57 @@ for ten in ung_vien:
     except Exception:
         continue
     if du_file(co_san):
-        print(f"[đã có sẵn] {co_san}")
+        noi(f"[đã có sẵn] {co_san}")
         raise SystemExit(0)
 
-print(f"[đang tải mô hình {ten_model}] — thanh tiến trình bên dưới là của bộ tải")
+tong = DUNG_LUONG_MB.get(ten_model, 0) * 1024 * 1024
+noi(f"      Bắt đầu tải (khoảng {gon(tong)}). Con số bên dưới tăng dần là máy đang tải bình thường.")
+noi("      Đóng cửa sổ giữa chừng cũng không mất phần đã tải: lần sau tải tiếp.")
+noi()
+
 loi_cuoi = None
 for ten in ung_vien:
-    try:
-        duong_dan = download_model(ten, cache_dir=str(thu_muc), local_files_only=False)
-    except Exception as err:
-        loi_cuoi = err
+    ket_qua: dict = {}
+
+    def lam(ten: str = ten) -> None:
+        try:
+            ket_qua["duong_dan"] = download_model(ten, cache_dir=str(thu_muc), local_files_only=False)
+        except BaseException as err:  # noqa: BLE001 - mang mọi lỗi về luồng chính
+            ket_qua["loi"] = err
+
+    kho = thu_muc_kho(ten)
+    luc_dau = dung_luong(kho)
+    bat_dau = time.monotonic()
+    luong = threading.Thread(target=lam, daemon=True)
+    luong.start()
+    while luong.is_alive():
+        luong.join(timeout=3)
+        da = dung_luong(kho)
+        dong = f"      Đã tải {gon(da)}"
+        if tong and da < tong:
+            dong += f" / {gon(tong)}  ({int(da * 100 / tong)}%)"
+        elif tong:
+            # Bảng dung lượng chỉ là ước lượng; tải vượt con số đó thì đừng in "103%".
+            dong += "  (sắp xong, đang kiểm lại file)"
+        troi = time.monotonic() - bat_dau
+        toc_do = (da - luc_dau) / troi if troi > 5 else 0
+        if toc_do > 0:
+            dong += f"  · {gon(toc_do)}/giây"
+            if tong and da < tong:
+                con = (tong - da) / toc_do
+                dong += f"  · còn khoảng {max(1, round(con / 60))} phút"
+        print("\r" + dong + "      ", end="", flush=True)
+    noi()
+
+    if "loi" in ket_qua:
+        loi_cuoi = ket_qua["loi"]
         continue
-    if du_file(duong_dan):
-        print(f"[tải xong] {duong_dan}")
+    if du_file(ket_qua.get("duong_dan", "")):
+        noi(f"[tải xong] {ket_qua['duong_dan']}")
         raise SystemExit(0)
     loi_cuoi = RuntimeError("tải xong nhưng thiếu file")
 
-print(f"[lỗi] {loi_cuoi}")
+noi(f"[lỗi] {loi_cuoi}")
 raise SystemExit(4)
 PYCODE
         echo
