@@ -1,0 +1,132 @@
+# ===========================================================================
+# srtgen — thư viện Python cho macOS Intel (x86_64), Python 3.12
+#
+# Máy đích: iMac 2017, Core i7 4 nhân, 32GB RAM, macOS Intel, KHÔNG có GPU.
+# Cài bằng: uv pip install -r requirements-macos.txt   (xem CaiDat.command)
+#
+# VÌ SAO GHIM CỨNG TỪNG PHIÊN BẢN
+# -------------------------------
+# Máy Mac dùng chip Intel đang ở cuối vòng đời hỗ trợ. Vài thư viện có phần
+# biên dịch sẵn (ctranslate2, onnxruntime, av, tokenizers, pydantic-core) đã
+# ngừng phát hành bản cho Intel ở các phiên bản mới. Nếu để trình cài tự chọn
+# "bản mới nhất", một ngày đẹp trời nó sẽ chọn bản chỉ có cho Apple Silicon rồi
+# quay ra tự biên dịch từ mã nguồn — việc đó cần Xcode, mất hàng giờ và thường
+# thất bại. Mà bộ cài mới CỐ TÌNH không cài Xcode.
+#
+# Mỗi dòng dưới đây là một phiên bản đã biết là có sẵn gói biên dịch
+# macosx_x86_64 cho Python 3.12.
+#
+# => Sửa các số phiên bản này chỉ khi biết rõ mình đang làm gì.
+#
+# HAI PHẦN, PHÂN CÁCH BỞI DÒNG @@CORE_END@@
+# -----------------------------------------
+#   Phần 1 (LÕI)  — chạy được giao diện, trình sửa phụ đề, kiểm tra file,
+#                   chuẩn hoá file .srt, dịch tiếng Việt bằng Google miễn phí.
+#                   Nhẹ, gần như thuần Python, gần như không bao giờ cài hỏng.
+#   Phần 2 (NGHE) — nhận dạng giọng nói (Whisper). Nặng, có mã máy.
+#
+# CaiDat.command cài cả hai. Nếu phần 2 hỏng, nó cài lại riêng phần 1 để người
+# dùng vẫn dùng được chức năng kiểm tra, sửa và chuẩn hoá file .srt — đó là
+# phần có giá trị ngay cả khi máy không gỡ băng được.
+# ===========================================================================
+
+
+# --------------------------------------------------------------------------
+# PHẦN 1 — LÕI
+# --------------------------------------------------------------------------
+
+# Tách từ tiếng Trung. Thuần Python, không cần biên dịch.
+jieba==0.42.1
+
+# Sinh pinyin có dấu thanh.
+pypinyin==0.53.0
+
+# Đổi phồn thể sang giản thể (Whisper hay trả lẫn hai loại).
+# Bản "-reimplemented" là bản thuần Python; bản gốc "opencc" cần biên dịch C++,
+# nghĩa là cần Xcode — đúng thứ bộ cài này tránh.
+opencc-python-reimplemented==0.1.7
+
+# Đọc file cấu hình config/default.yaml.
+PyYAML==6.0.2
+
+# Dòng lệnh và chữ màu trong Terminal.
+typer==0.15.1
+rich==13.9.4
+
+# Tìm đúng thư mục chuẩn của macOS (~/Library/...).
+platformdirs==4.3.6
+
+# Giao diện web chạy tại chỗ trên máy (127.0.0.1), không gửi gì ra ngoài.
+fastapi==0.115.6
+uvicorn==0.32.1
+# pydantic-core có phần viết bằng Rust; 2.10.x là bản còn phát hành gói biên
+# dịch sẵn cho Intel Mac.
+pydantic==2.10.4
+# Cần cho việc kéo thả file .srt lên trang "Kiểm tra file" và trình sửa.
+python-multipart==0.0.20
+
+# Gọi API của Gemini: soát tên riêng (S7) và dịch tiếng Việt (S8).
+httpx==0.28.1
+
+# Dịch tiếng Việt khi người dùng KHÔNG nhập API key — dùng endpoint miễn phí
+# của Google. Chất lượng thấp hơn hẳn Gemini nhưng không cần đăng ký gì.
+deep-translator==1.11.4
+# Hai thư viện dưới đây là thứ deep-translator cần. Ghim luôn để lần cài sau
+# ra đúng bộ đã thử, không phụ thuộc vào việc hôm đó trên mạng có gì mới.
+requests==2.32.3
+beautifulsoup4==4.12.3
+
+# Tải âm thanh từ YouTube.
+#
+# ĐÂY LÀ NGOẠI LỆ DUY NHẤT KHÔNG GHIM CỨNG, và là ngoại lệ có chủ ý:
+# YouTube đổi cách hoạt động vài tuần một lần, bản yt-dlp cũ sẽ báo lỗi
+# "Unable to extract" và không tải được gì. Ghim cứng ở đây đồng nghĩa với việc
+# hẹn giờ cho tool hỏng. CaiDat.command luôn cài bản mới nhất, và trong app có
+# nút "Cập nhật yt-dlp" — nút đó chỉ chạy: uv pip install -U yt-dlp
+yt-dlp>=2025.1.1
+
+
+# @@CORE_END@@
+# --------------------------------------------------------------------------
+# PHẦN 2 — NGHE VÀ GỠ BĂNG (Whisper)
+#
+# Thứ tự ghi ở đây là thứ tự từ dưới lên: faster-whisper đứng cuối vì nó phụ
+# thuộc vào tất cả những dòng phía trên. Ghim sẵn các thư viện phụ thuộc để
+# trình cài không tự nâng cấp chúng lên bản không còn hỗ trợ Intel Mac.
+# --------------------------------------------------------------------------
+
+# numpy 1.26.4 là bản 1.x cuối cùng, có sẵn gói biên dịch cho Python 3.12 trên
+# Intel Mac. Giữ ở nhánh 1.x là lựa chọn an toàn hai chiều: thư viện biên dịch
+# theo numpy 1 thì bắt buộc phải có numpy 1, còn thư viện biên dịch theo
+# numpy 2 vẫn chạy được với numpy 1.19 trở lên.
+numpy==1.26.4
+
+# CTranslate2 là bộ máy tính toán của faster-whisper (chạy CPU, kiểu int8).
+# 4.3.1 là bản CUỐI CÙNG của nhánh 4.0-4.5 còn phát hành gói
+# macosx_10_9_x86_64 cho Python 3.12. Bản 4.4.0 và 4.5.0 chỉ có gói cho Apple
+# Silicon (macosx_11_0_arm64) và KHÔNG có bản mã nguồn, nên trên máy Intel cả
+# lệnh cài sẽ đứt ngay ở dòng này. Đã kiểm lại trên PyPI: các bản có gói cho
+# Intel Mac + Python 3.12 là 3.19.0-4.3.1, rồi 4.6.0 trở lên.
+# Muốn dùng bản mới hơn thì phải nhảy hẳn lên 4.6.0 (macosx_10_13_x86_64).
+ctranslate2==4.3.1
+
+# Dùng cho bộ lọc VAD (bỏ qua đoạn im lặng, chống Whisper "nghe ra chữ" ở đoạn
+# chỉ có nhạc). 1.19.2 là bản còn phát hành cho macOS Intel.
+onnxruntime==1.19.2
+
+# Giải mã âm thanh trong faster-whisper. Có ffmpeg bọc sẵn bên trong, tách biệt
+# với file ffmpeg mà CaiDat.command tải về thư mục app.
+av==12.3.0
+
+# Bộ tách token của mô hình Whisper (viết bằng Rust, có gói biên dịch sẵn).
+tokenizers==0.20.3
+
+# Tải mô hình về máy. Bản này hỗ trợ tải nối tiếp khi đứt mạng giữa chừng —
+# đó là lý do CaiDat.command chạy lại lần hai không phải tải lại từ đầu.
+huggingface-hub==0.26.5
+tqdm==4.67.1
+
+# Bộ nhận dạng giọng nói. Trên máy này luôn chạy CPU với compute_type=int8.
+# 1.1.x là bản đầu tiên nhận tên mô hình "large-v3-turbo" — mô hình mặc định
+# của tool, nhanh hơn large-v3 khoảng 2.7 lần trên CPU.
+faster-whisper==1.1.1

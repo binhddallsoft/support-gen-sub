@@ -1,0 +1,23 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.coverage
+htmlcov/
+
+# pipeline working data
+work/
+out/
+*.wav
+*.mp3
+*.m4a
+*.webm
+*.mp4
+
+# secrets
+.env
+secrets.yaml

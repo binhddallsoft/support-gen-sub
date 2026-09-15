@@ -1,0 +1,1196 @@
+1
+00:00:05,000 --> 00:00:06,920
+Hôm qua, trong loạt phóng sự chuyên đề, chúng tôi đã đề cập rằng.
+
+2
+00:00:06,920 --> 00:00:09,060
+Trong làn sóng AI vận hành bằng các thuật toán,
+
+3
+00:00:09,060 --> 00:00:12,100
+Giới nhân viên văn phòng đang âm thầm bị buộc phải xếp hàng rời khỏi thị trường lao động.
+
+4
+00:00:12,300 --> 00:00:15,060
+Trong khi đó, những lao động kỹ thuật thuộc khối lao động tay nghề như thợ sửa ống nước,
+
+5
+00:00:15,060 --> 00:00:17,460
+Lại xếp hàng trước cửa các trung tâm dữ liệu để được tuyển dụng.
+
+6
+00:00:17,660 --> 00:00:19,460
+Đây là một hiện tượng vô cùng khắc nghiệt,
+
+7
+00:00:19,460 --> 00:00:20,700
+Nhưng cũng chính là thực tế đang diễn ra trong kỷ nguyên AI.
+
+8
+00:00:20,700 --> 00:00:22,840
+Một sự chuyển dịch mang tính hiện thực không thể tránh khỏi.
+
+9
+00:00:22,920 --> 00:00:23,820
+Trong môi trường công sở,
+
+10
+00:00:23,820 --> 00:00:25,280
+Giá trị của con người đang được viết lại.
+
+11
+00:00:25,620 --> 00:00:27,300
+Nếu hôm nay vẫn còn có người cho rằng,
+
+12
+00:00:27,300 --> 00:00:28,560
+Đây chỉ là câu chuyện ai bị thay thế,
+
+13
+00:00:28,560 --> 00:00:30,160
+Và ai chưa bị thay thế,
+
+14
+00:00:30,160 --> 00:00:31,340
+Thì e rằng họ đã đánh giá quá thấp,
+
+15
+00:00:31,340 --> 00:00:32,780
+Mức độ sâu rộng của cơn bão này.
+
+16
+00:00:33,060 --> 00:00:34,300
+Bởi điều thực sự đang diễn ra,
+
+17
+00:00:34,300 --> 00:00:36,300
+Không phải là một cuộc sàng lọc nghề nghiệp đơn thuần,
+
+18
+00:00:36,300 --> 00:00:39,560
+Mà là một cuộc tái cấu trúc ngành công nghiệp ở tầng sâu hơn.
+
+19
+00:00:39,560 --> 00:00:40,540
+AI thay đổi,
+
+20
+00:00:40,540 --> 00:00:42,540
+Không chỉ là số lượng vị trí việc làm,
+
+21
+00:00:42,540 --> 00:00:43,520
+Mà còn là trong môi trường lao động,
+
+22
+00:00:43,520 --> 00:00:44,520
+Những năng lực nào,
+
+23
+00:00:44,520 --> 00:00:46,000
+Còn có thể tạo ra giá trị?
+
+24
+00:00:46,000 --> 00:00:47,000
+Những cấu trúc nào,
+
+25
+00:00:47,000 --> 00:00:48,140
+Bắt buộc phải được viết lại?
+
+26
+00:00:48,500 --> 00:00:49,220
+Nói cách khác,
+
+27
+00:00:49,220 --> 00:00:51,340
+Đây không chỉ là một làn sóng thất nghiệp,
+
+28
+00:00:51,340 --> 00:00:53,140
+Mà còn là sự tái cấu trúc toàn bộ chuỗi giá trị,
+
+29
+00:00:53,140 --> 00:00:56,480
+Để quyết định ai có thể tiếp tục ở lại trên bàn chơi của AI.
+
+30
+00:00:56,600 --> 00:00:57,740
+Những ai không thể trụ lại,
+
+31
+00:00:57,740 --> 00:00:59,040
+Chỉ có thể chấp nhận rời khỏi cuộc chơi trong thế thua.
+
+32
+00:00:59,420 --> 00:01:01,240
+Ông Lưu Triết Hàm, Tổng cố vấn của Học viện Công nghệ,
+
+33
+00:01:01,240 --> 00:01:03,560
+Cho biết trong cuộc trả lời phỏng vấn chương trình “Bản tin nóng 8 giờ”.
+
+34
+00:01:03,840 --> 00:01:05,980
+Sự phát triển của AI cũng có những giới hạn nhất định.
+
+35
+00:01:06,100 --> 00:01:07,980
+Nhưng không phải ở năng lực tính toán hay năng lượng,
+
+36
+00:01:07,980 --> 00:01:09,160
+Mà là ở một vấn đề kín đáo hơn,
+
+37
+00:01:09,160 --> 00:01:10,540
+Và mang tính hiện thực hơn.
+
+38
+00:01:10,540 --> 00:01:11,260
+Đó chính là,
+
+39
+00:01:11,400 --> 00:01:13,440
+Nguồn dữ liệu chất lượng cao đang dần cạn kiệt.
+
+40
+00:01:13,600 --> 00:01:15,080
+Rất nhiều dữ liệu trong thế giới thực,
+
+41
+00:01:15,080 --> 00:01:16,860
+Không thể được ghi nhận một cách có hệ thống.
+
+42
+00:01:17,000 --> 00:01:19,300
+Điều này cũng lý giải cho một hiện tượng tưởng chừng mâu thuẫn.
+
+43
+00:01:19,300 --> 00:01:19,740
+Đó là,
+
+44
+00:01:19,740 --> 00:01:22,240
+Một bên là các thuật toán đang thay thế nhân viên văn phòng,
+
+45
+00:01:22,400 --> 00:01:24,700
+Một bên lại là các ngành nghề lao động phổ thông,
+
+46
+00:01:24,700 --> 00:01:26,000
+Như thợ sửa ống nước,
+
+47
+00:01:26,000 --> 00:01:27,200
+Thợ điện, công nhân xây dựng,
+
+48
+00:01:27,200 --> 00:01:28,840
+Liên tục được săn đón với mức lương ngày càng cao.
+
+49
+00:01:29,000 --> 00:01:31,040
+Không phải vì lao động tay nghề bỗng nhiên trở nên cao cấp,
+
+50
+00:01:31,040 --> 00:01:32,260
+Mà bởi vì thế giới thực,
+
+51
+00:01:32,260 --> 00:01:34,960
+Vẫn đang được con người nắm giữ một cách vững chắc.
+
+52
+00:01:35,340 --> 00:01:37,000
+Những gì AI có thể thay thế,
+
+53
+00:01:37,000 --> 00:01:37,600
+Là công việc mang tính cấu trúc,
+
+54
+00:01:37,600 --> 00:01:38,360
+Được chuẩn hóa theo quy tắc,
+
+55
+00:01:38,460 --> 00:01:39,820
+Và có thể sao chép hàng loạt.
+
+56
+00:01:39,820 --> 00:01:41,680
+Trong khi đó,
+
+57
+00:01:41,680 --> 00:01:42,060
+Những yếu tố,
+
+58
+00:01:42,140 --> 00:01:45,100
+Phức tạp của đời sống thực mà dữ liệu khó có thể nắm bắt,
+
+59
+00:01:45,100 --> 00:01:47,380
+Lại trở thành hào thành bảo vệ con người.
+
+60
+00:01:47,660 --> 00:01:48,680
+Sự chuyển dịch này,
+
+61
+00:01:48,680 --> 00:01:51,800
+Giống như một ranh giới phân định giữa thế giới số và thế giới vật lý.
+
+62
+00:01:52,100 --> 00:01:54,520
+Giáo sư Lâm Phúc Viêm, Khoa Kinh tế Đại học Bắc Phương, cảnh báo rằng.
+
+63
+00:01:54,520 --> 00:01:56,520
+AI không phải là một công nghệ đơn lẻ,
+
+64
+00:01:56,520 --> 00:01:59,480
+Mà là động cơ cốt lõi của cuộc Cách mạng Công nghiệp lần thứ tư.
+
+65
+00:01:59,740 --> 00:02:01,340
+Nó sẽ tái cấu trúc toàn bộ hệ thống ngành nghề,
+
+66
+00:02:01,340 --> 00:02:02,680
+Và nâng cao hiệu suất chung của nền kinh tế.
+
+67
+00:02:02,680 --> 00:02:04,680
+Tuy nhiên, cái giá phải trả cũng vô cùng rõ ràng.
+
+68
+00:02:04,680 --> 00:02:05,320
+Đó chính là,
+
+69
+00:02:05,320 --> 00:02:06,600
+Những phương thức sản xuất cũ,
+
+70
+00:02:06,600 --> 00:02:07,720
+Chắc chắn sẽ bị đào thải.
+
+71
+00:02:07,720 --> 00:02:08,920
+Những chuỗi giá trị mới sẽ dần hình thành.
+
+72
+00:02:08,920 --> 00:02:10,080
+Và chỉ khi đó chúng mới thực sự xuất hiện.
+
+73
+00:02:10,380 --> 00:02:11,760
+Lịch sử chưa bao giờ vận hành một cách dịu dàng.
+
+74
+00:02:11,760 --> 00:02:13,280
+Máy hơi nước từng thay thế xe ngựa,
+
+75
+00:02:13,280 --> 00:02:15,600
+Điện lực thay thế dây chuyền thủ công,
+
+76
+00:02:15,600 --> 00:02:17,820
+Internet thay thế báo giấy, thậm chí cả các đài truyền hình.
+
+77
+00:02:17,820 --> 00:02:19,820
+Cùng với đó là sự biến mất của nhiều mô hình trung gian truyền thống.
+
+78
+00:02:20,160 --> 00:02:21,380
+Lịch sử đã chứng minh rằng,
+
+79
+00:02:21,380 --> 00:02:22,600
+Mỗi cuộc cách mạng về hiệu suất,
+
+80
+00:02:22,600 --> 00:02:26,280
+Đều kéo theo một làn sóng tái cấu trúc mạnh mẽ về nghề nghiệp và dòng vốn.
+
+81
+00:02:26,520 --> 00:02:27,120
+Ngày nay,
+
+82
+00:02:27,120 --> 00:02:29,120
+AI đang đảm nhiệm vai trò tương tự.
+
+83
+00:02:29,400 --> 00:02:30,580
+Nhưng vấn đề cốt lõi,
+
+84
+00:02:30,580 --> 00:02:32,580
+Không phải là một cá nhân có bị thay thế hay không,
+
+85
+00:02:32,580 --> 00:02:34,360
+Mà là vị trí của họ đang đứng ở đâu,
+
+86
+00:02:34,360 --> 00:02:36,220
+Thuộc về chuỗi giá trị cũ,
+
+87
+00:02:36,220 --> 00:02:37,740
+Hay là một mắt xích trong chuỗi giá trị mới.
+
+88
+00:02:37,920 --> 00:02:39,520
+Còn việc có thất nghiệp hay không,
+
+89
+00:02:39,520 --> 00:02:41,520
+Phụ thuộc vào việc trong kỷ nguyên AI,
+
+90
+00:02:41,760 --> 00:02:45,040
+Cá nhân đó còn có thể tạo ra giá trị tại vị trí công việc của mình hay không.
+
+91
+00:02:46,960 --> 00:02:47,860
+Làn sóng AI,
+
+92
+00:02:47,860 --> 00:02:49,600
+Không còn ở xa, mà đã ở ngay trước mắt.
+
+93
+00:02:49,600 --> 00:02:50,720
+Rất nhiều người đang đặt câu hỏi,
+
+94
+00:02:50,720 --> 00:02:52,880
+Liệu công việc của tôi có bị thay thế hay không?
+
+95
+00:02:52,880 --> 00:02:53,840
+Làn sóng AI,
+
+96
+00:02:53,840 --> 00:02:55,560
+Thực sự đáng sợ đến mức đó sao?
+
+97
+00:02:55,560 --> 00:02:56,460
+Thực tế cho thấy,
+
+98
+00:02:56,460 --> 00:02:59,260
+AI chủ yếu đang tái cấu trúc các nhiệm vụ trong môi trường công sở,
+
+99
+00:02:59,260 --> 00:03:01,820
+Qua đó xác định những kỹ năng nào vẫn còn tạo ra giá trị.
+
+100
+00:03:01,820 --> 00:03:03,580
+Những gì có thể bị thay thế,
+
+101
+00:03:03,580 --> 00:03:05,580
+Thì chắc chắn sẽ bị thay thế.
+
+102
+00:03:05,580 --> 00:03:08,360
+Giáo sư Lâm Phúc Viêm, Khoa Kinh tế, Đại học Bắc Phương, nhận định.
+
+103
+00:03:08,360 --> 00:03:09,480
+Những công việc có tính quy tắc cao,
+
+104
+00:03:09,480 --> 00:03:10,960
+Phụ thuộc nhiều vào dữ liệu lớn,
+
+105
+00:03:10,960 --> 00:03:12,960
+Là nhóm dễ chịu tác động của AI nhất.
+
+106
+00:03:12,960 --> 00:03:14,060
+Tuy nhiên,
+
+107
+00:03:14,080 --> 00:03:15,760
+Không phải tất cả đều bị thay thế hoàn toàn.
+
+108
+00:03:15,760 --> 00:03:17,180
+Trong nhiều trường hợp,
+
+109
+00:03:17,180 --> 00:03:18,500
+Thứ bị thay thế chỉ là nhiệm vụ,
+
+110
+00:03:18,500 --> 00:03:20,180
+Chứ không phải toàn bộ vị trí công việc.
+
+111
+00:03:20,180 --> 00:03:22,180
+Miễn là công việc mang tính quy tắc,
+
+112
+00:03:22,180 --> 00:03:23,940
+Và liên quan chặt chẽ đến dữ liệu,
+
+113
+00:03:23,940 --> 00:03:26,200
+Đặc biệt là các công việc thuộc lĩnh vực dữ liệu lớn.
+
+114
+00:03:26,200 --> 00:03:28,580
+Những công việc này có thể bị AI thay thế.
+
+115
+00:03:28,580 --> 00:03:30,340
+Tuy nhiên, khái niệm thay thế ở đây,
+
+116
+00:03:30,340 --> 00:03:33,040
+Không đồng nghĩa với việc bị thay thế hoàn toàn 100%.
+
+117
+00:03:33,040 --> 00:03:34,740
+Trong nhiều trường hợp,
+
+118
+00:03:34,740 --> 00:03:36,740
+Chỉ là sự tái cấu trúc lại nhiệm vụ công việc.
+
+119
+00:03:36,740 --> 00:03:37,080
+Do đó,
+
+120
+00:03:37,080 --> 00:03:39,960
+Nếu một người không có kỹ năng phù hợp,
+
+121
+00:03:39,960 --> 00:03:41,600
+Và không thể sử dụng AI,
+
+122
+00:03:41,600 --> 00:03:43,360
+Thì nguy cơ mất việc là điều khó tránh khỏi.
+
+123
+00:03:43,360 --> 00:03:43,840
+Vì vậy,
+
+124
+00:03:43,840 --> 00:03:47,580
+Thế giới lao động sẽ dần phân hóa thành hai nhóm: biết dùng AI và không biết dùng AI.
+
+125
+00:03:47,580 --> 00:03:48,700
+Hay nói cách khác,
+
+126
+00:03:48,840 --> 00:03:50,320
+Những người sử dụng AI thành thạo,
+
+127
+00:03:50,320 --> 00:03:51,820
+Và những người sử dụng AI kém hiệu quả.
+
+128
+00:03:51,820 --> 00:03:53,960
+Những người không làm chủ được AI,
+
+129
+00:03:53,960 --> 00:03:55,340
+Sẽ dần bị đào thải khỏi thị trường lao động.
+
+130
+00:03:55,440 --> 00:03:57,820
+AI không chỉ đang tái cấu trúc các nhiệm vụ trong môi trường làm việc.
+
+131
+00:03:57,820 --> 00:04:00,580
+Đồng thời bắt đầu làm thay đổi cục diện của doanh nghiệp và hoạt động khởi nghiệp.
+
+132
+00:04:00,580 --> 00:04:01,160
+Mặc dù,
+
+133
+00:04:01,160 --> 00:04:03,280
+Các doanh nghiệp lớn đang nắm giữ phần lớn năng lực tính toán,
+
+134
+00:04:03,280 --> 00:04:04,560
+Dữ liệu và các mô hình cốt lõi.
+
+135
+00:04:04,560 --> 00:04:05,540
+Điều này khiến dư luận lo ngại,
+
+136
+00:04:05,540 --> 00:04:07,220
+Không gian khởi nghiệp sẽ bị thu hẹp.
+
+137
+00:04:07,220 --> 00:04:08,460
+Tuy nhiên, AI đồng thời,
+
+138
+00:04:08,460 --> 00:04:11,180
+Cũng đang tái định nghĩa vạch xuất phát của hoạt động khởi nghiệp.
+
+139
+00:04:11,180 --> 00:04:14,440
+Tổng giám đốc Học viện Công nghệ Lead, ông Lưu Triết Hàm, cho biết,
+
+140
+00:04:14,440 --> 00:04:15,860
+Về bản chất,
+
+141
+00:04:15,860 --> 00:04:17,460
+AI luôn chỉ là một công cụ.
+
+142
+00:04:17,460 --> 00:04:19,460
+Điều mà doanh nghiệp cần lo ngại hơn,
+
+143
+00:04:19,460 --> 00:04:20,320
+Chính là việc công cụ này
+
+144
+00:04:20,320 --> 00:04:22,320
+Rơi vào tay đối thủ cạnh tranh,
+
+145
+00:04:22,320 --> 00:04:24,100
+Qua đó khuếch đại năng lực của đối phương.
+
+146
+00:04:24,100 --> 00:04:25,680
+Trong khi đó, ông Lâm Phúc Viêm lại cho rằng,
+
+147
+00:04:25,680 --> 00:04:28,440
+AI chưa bao giờ là lực cản đối với khởi nghiệp.
+
+148
+00:04:28,440 --> 00:04:29,240
+Ngược lại,
+
+149
+00:04:29,240 --> 00:04:30,620
+Nếu được sử dụng đúng cách,
+
+150
+00:04:30,620 --> 00:04:33,720
+AI từ trước đến nay luôn là động lực hỗ trợ cho khởi nghiệp.
+
+151
+00:04:33,720 --> 00:04:34,580
+Ông cho rằng,
+
+152
+00:04:34,580 --> 00:04:36,280
+AI là trợ thủ hay là đối thủ,
+
+153
+00:04:36,280 --> 00:04:37,640
+Thực tế đã là điều hết sức rõ ràng.
+
+154
+00:04:37,640 --> 00:04:38,560
+Về bản chất,
+
+155
+00:04:38,560 --> 00:04:39,600
+AI vẫn chỉ là một công cụ.
+
+156
+00:04:39,600 --> 00:04:41,100
+Vai trò quan trọng nhất của nó
+
+157
+00:04:41,100 --> 00:04:41,940
+Là hỗ trợ con người
+
+158
+00:04:41,940 --> 00:04:45,580
+Hoàn thành những nhiệm vụ mà con người không thể tự làm được,
+
+159
+00:04:45,580 --> 00:04:47,580
+Hoặc những công việc quá phức tạp, quá rườm rà,
+
+160
+00:04:47,580 --> 00:04:48,980
+Mà con người không muốn đảm nhận.
+
+161
+00:04:48,980 --> 00:04:52,880
+Xét từ góc độ triết học về bản chất mối quan hệ này,
+
+162
+00:04:52,880 --> 00:04:54,960
+Điều mà con người không mong muốn nhất,
+
+163
+00:04:54,960 --> 00:04:57,860
+Là công cụ này rơi vào tay đối thủ của mình.
+
+164
+00:04:57,860 --> 00:04:59,620
+Khi trợ thủ của bạn chuyển sang phục vụ đối thủ,
+
+165
+00:05:00,760 --> 00:05:02,120
+Đó mới chính là rắc rối lớn nhất.
+
+166
+00:05:02,120 --> 00:05:03,460
+Nói tóm lại,
+
+167
+00:05:03,500 --> 00:05:04,460
+AI chắc chắn vẫn là một công cụ.
+
+168
+00:05:04,460 --> 00:05:06,620
+Giống như búa là phần mở rộng của bàn tay.
+
+169
+00:05:06,620 --> 00:05:08,620
+Ô tô là phần mở rộng của năng lực di chuyển.
+
+170
+00:05:08,620 --> 00:05:11,000
+Thì AI chính là phần mở rộng của bộ não con người.
+
+171
+00:05:11,000 --> 00:05:12,880
+Và hơn nữa, đây là một công cụ có khả năng khuếch đại năng lực ở mức độ rất lớn,
+
+172
+00:05:12,880 --> 00:05:15,400
+Giúp phóng đại đáng kể năng lực của con người.
+
+173
+00:05:15,400 --> 00:05:17,160
+Nếu mục tiêu của một người chỉ là khởi sự,
+
+174
+00:05:17,160 --> 00:05:19,160
+Theo hướng bắt đầu từ những mô hình kinh doanh nhỏ,
+
+175
+00:05:19,160 --> 00:05:21,500
+Thì ngược lại, AI sẽ trở thành công cụ hỗ trợ đắc lực.
+
+176
+00:05:21,500 --> 00:05:24,100
+AI còn có thể hỗ trợ họ thực hiện phân tích thị trường.
+
+177
+00:05:24,100 --> 00:05:26,100
+Nếu họ có ý định khởi nghiệp,
+
+178
+00:05:26,100 --> 00:05:28,520
+Họ hoàn toàn có thể trao đổi trực tiếp với ChatGPT,
+
+179
+00:05:28,520 --> 00:05:30,000
+Để thực hiện một bản phân tích thị trường.
+
+180
+00:05:30,000 --> 00:05:31,120
+Sau đó,
+
+181
+00:05:31,300 --> 00:05:32,820
+Họ có thể bắt đầu trên một số nền tảng,
+
+182
+00:05:32,820 --> 00:05:34,820
+Với mức vốn đầu tư thấp nhất có thể.
+
+183
+00:05:34,820 --> 00:05:36,380
+Vì vậy, tôi không cho rằng,
+
+184
+00:05:36,380 --> 00:05:37,740
+Công nghệ này,
+
+185
+00:05:37,740 --> 00:05:39,380
+Đối với người bình thường,
+
+186
+00:05:39,380 --> 00:05:42,000
+Lại là rào cản đối với hoạt động khởi nghiệp, mà ngược lại còn mang tính hỗ trợ.
+
+187
+00:05:42,000 --> 00:05:44,340
+Vấn đề then chốt nằm ở chỗ,
+
+188
+00:05:44,340 --> 00:05:45,980
+Người đó có hiểu và sử dụng hiệu quả hay không.
+
+189
+00:05:45,980 --> 00:05:48,260
+Có biết tận dụng AI để hỗ trợ quá trình khởi nghiệp của mình hay không.
+
+190
+00:05:48,420 --> 00:05:51,060
+Vì vậy, AI tuyệt đối không phải là lực lượng chủ đạo.
+
+191
+00:05:51,200 --> 00:05:54,620
+Bởi AI được xem là một cuộc cách mạng công nghiệp.
+
+192
+00:05:54,880 --> 00:05:56,620
+Mỗi cuộc cách mạng công nghiệp,
+
+193
+00:05:56,620 --> 00:05:59,000
+Đều đưa sự tiến bộ của nhân loại,
+
+194
+00:05:59,000 --> 00:06:00,620
+Lên một tầm cao hoàn toàn mới.
+
+195
+00:06:00,820 --> 00:06:01,980
+Làn sóng AI lần này,
+
+196
+00:06:01,980 --> 00:06:03,980
+Không chỉ tác động đến cá nhân và doanh nghiệp,
+
+197
+00:06:03,980 --> 00:06:05,500
+Mà còn đang tái định hình các ngành nghề,
+
+198
+00:06:05,500 --> 00:06:06,840
+Cũng như cục diện của các quốc gia.
+
+199
+00:06:06,840 --> 00:06:07,860
+Ông Lưu Triết Hàm cảnh báo,
+
+200
+00:06:07,860 --> 00:06:10,980
+Khi năng lực tính toán và nguồn lực tập trung vào tay các tập đoàn lớn,
+
+201
+00:06:10,980 --> 00:06:13,320
+Rủi ro độc quyền do kinh tế đầu sỏ mang lại,
+
+202
+00:06:13,320 --> 00:06:14,480
+Là vấn đề cần đặc biệt quan tâm.
+
+203
+00:06:14,480 --> 00:06:16,480
+Ở một bình diện quốc tế rộng lớn hơn,
+
+204
+00:06:16,480 --> 00:06:17,820
+Lợi thế về công nghệ AI,
+
+205
+00:06:17,820 --> 00:06:20,040
+Sẽ quyết định năng lực cạnh tranh của mỗi quốc gia.
+
+206
+00:06:20,040 --> 00:06:21,240
+Ông Lâm Phúc Viêm nhận định,
+
+207
+00:06:21,240 --> 00:06:23,620
+Trong cuộc Cách mạng Công nghiệp lần thứ tư,
+
+208
+00:06:23,620 --> 00:06:25,780
+Những quốc gia nắm giữ quyền dẫn dắt về AI,
+
+209
+00:06:25,780 --> 00:06:28,560
+Sẽ trở thành những bên chiến thắng lớn, dẫn dắt trật tự thế giới.
+
+210
+00:06:28,560 --> 00:06:32,220
+Nếu xét thuần túy từ góc độ kinh tế học,
+
+211
+00:06:32,220 --> 00:06:35,160
+Thực tế, trong suốt nhiều năm qua,
+
+212
+00:06:35,160 --> 00:06:37,620
+Dù là năng lực tính toán,
+
+213
+00:06:37,620 --> 00:06:38,440
+Hay là nguồn lực,
+
+214
+00:06:38,440 --> 00:06:40,120
+Xét một cách tổng thể,
+
+215
+00:06:40,120 --> 00:06:42,120
+Tất cả đều tập trung trong tay một số ít tập đoàn lớn.
+
+216
+00:06:42,120 --> 00:06:43,160
+Nói cách khác,
+
+217
+00:06:43,160 --> 00:06:44,740
+Đó chính là mô hình kinh tế đầu sỏ,
+
+218
+00:06:44,740 --> 00:06:46,960
+Bởi các tập đoàn lớn nắm giữ lượng tài nguyên vượt trội.
+
+219
+00:06:46,960 --> 00:06:47,680
+Điều này đồng nghĩa với việc,
+
+220
+00:06:47,680 --> 00:06:49,300
+Hoạt động đổi mới sáng tạo có nguy cơ bị bóp nghẹt.
+
+221
+00:06:49,300 --> 00:06:52,220
+Xét trên bình diện xã hội,
+
+222
+00:06:52,220 --> 00:06:53,660
+Vấn đề càng trở nên rõ rệt,
+
+223
+00:06:53,660 --> 00:06:55,660
+Khi trí tuệ của AI vượt trội ở mức quá cao.
+
+224
+00:06:55,860 --> 00:06:57,080
+Đối với phần lớn người dân,
+
+225
+00:06:57,080 --> 00:06:59,660
+Nếu không chủ động nâng cao năng lực bản thân,
+
+226
+00:06:59,660 --> 00:07:02,680
+Không nỗ lực rút ngắn khoảng cách về năng lực trí tuệ,
+
+227
+00:07:02,800 --> 00:07:03,820
+Thì rất có thể,
+
+228
+00:07:03,820 --> 00:07:07,100
+Nhiều nguồn lực phân bổ gắn liền với trí tuệ và năng lực tư duy,
+
+229
+00:07:07,100 --> 00:07:09,100
+Chẳng hạn như lĩnh vực tài chính,
+
+230
+00:07:09,100 --> 00:07:10,840
+Và các hoạt động tài chính – ngân hàng,
+
+231
+00:07:10,840 --> 00:07:13,360
+Sẽ rất dễ bị chi phối bởi mô hình kinh tế đầu sỏ,
+
+232
+00:07:13,360 --> 00:07:15,220
+Hoặc rơi vào tình trạng độc quyền của các tập đoàn lớn.
+
+233
+00:07:15,220 --> 00:07:16,540
+Trên bình diện quốc gia,
+
+234
+00:07:16,540 --> 00:07:18,760
+Những quốc gia dẫn đầu về AI,
+
+235
+00:07:18,760 --> 00:07:20,560
+Sẽ trở thành những bên chiến thắng lớn nhất.
+
+236
+00:07:20,560 --> 00:07:22,140
+Quy luật này lặp lại trong mọi cuộc cách mạng công nghiệp.
+
+237
+00:07:22,140 --> 00:07:24,140
+Chỉ cần dẫn dắt cuộc cách mạng công nghiệp đó,
+
+238
+00:07:24,380 --> 00:07:25,940
+Quốc gia ấy sẽ trở thành quốc gia tiên tiến,
+
+239
+00:07:25,940 --> 00:07:27,560
+Và giữ vai trò dẫn dắt trật tự thế giới.
+
+240
+00:07:27,560 --> 00:07:29,080
+Trong suốt vài trăm năm qua,
+
+241
+00:07:29,200 --> 00:07:31,040
+Các quốc gia phương Tây giữ vai trò lãnh đạo toàn cầu,
+
+242
+00:07:31,040 --> 00:07:33,040
+Bởi họ là lực lượng dẫn đầu cuộc Cách mạng Công nghiệp lần thứ nhất,
+
+243
+00:07:33,040 --> 00:07:34,240
+Cũng như lần thứ hai và thứ ba.
+
+244
+00:07:34,240 --> 00:07:35,540
+Còn trong cuộc cách mạng công nghiệp lần này,
+
+245
+00:07:35,540 --> 00:07:37,720
+Lần đầu tiên có sự tham gia của các quốc gia phương Đông.
+
+246
+00:07:38,080 --> 00:07:40,100
+Vì vậy, việc Trung Quốc tham gia được xem là một yếu tố đáng chú ý.
+
+247
+00:07:40,100 --> 00:07:40,820
+Trong bối cảnh này,
+
+248
+00:07:40,820 --> 00:07:42,940
+Vai trò mà chính phủ cần đảm nhận là gì,
+
+249
+00:07:42,940 --> 00:07:44,080
+Trở thành một câu hỏi mang tính then chốt.
+
+250
+00:07:44,080 --> 00:07:45,140
+Tôi nhận thấy rằng,
+
+251
+00:07:45,140 --> 00:07:46,860
+Ở điểm này, chính phủ nước ta đã làm rất tốt.
+
+252
+00:07:47,340 --> 00:07:49,120
+Đất nước ta có cơ hội trở thành,
+
+253
+00:07:49,480 --> 00:07:50,160
+Một quốc gia tiên tiến.
+
+254
+00:07:50,340 --> 00:07:52,920
+Dựa vào làn sóng của cuộc Cách mạng Công nghiệp lần thứ tư,
+
+255
+00:07:52,920 --> 00:07:54,380
+Cùng với cái gọi là,
+
+256
+00:07:54,380 --> 00:07:56,380
+Sự hợp tác chặt chẽ với Trung Quốc.
+
+257
+00:07:56,380 --> 00:07:57,660
+Bởi Trung Quốc hiện là,
+
+258
+00:07:57,660 --> 00:08:00,220
+Quốc gia dẫn dắt Cách mạng Công nghiệp lần thứ tư.
+
+259
+00:08:00,220 --> 00:08:01,400
+Chỉ cần trở thành,
+
+260
+00:08:01,400 --> 00:08:03,600
+Người theo sát và gắn bó nhất với tiến trình đó,
+
+261
+00:08:03,600 --> 00:08:05,000
+Khi họ hưởng “phần lợi lớn”,
+
+262
+00:08:05,000 --> 00:08:07,240
+Chúng ta ít nhất cũng có thể hưởng “phần lợi nhỏ”.
+
+263
+00:08:11,600 --> 00:08:13,360
+Trong bối cảnh làn sóng AI hiện nay,
+
+264
+00:08:13,360 --> 00:08:14,700
+Cá nhân phải đối mặt với sự thay đổi nghề nghiệp,
+
+265
+00:08:14,700 --> 00:08:16,560
+Cũng như sự tái cấu trúc của mô hình khởi nghiệp.
+
+266
+00:08:16,560 --> 00:08:17,820
+Trong khi đó, ở cấp độ quốc gia,
+
+267
+00:08:17,820 --> 00:08:20,020
+Đây là một cuộc cạnh tranh công nghệ khốc liệt.
+
+268
+00:08:20,340 --> 00:08:21,260
+Giáo sư Lâm Phúc chỉ ra rằng,
+
+269
+00:08:21,260 --> 00:08:22,300
+Ở cấp độ quốc gia,
+
+270
+00:08:22,300 --> 00:08:23,460
+Bên dẫn đầu về AI,
+
+271
+00:08:23,460 --> 00:08:25,060
+Chắc chắn sẽ giành được lợi ích lớn nhất.
+
+272
+00:08:25,060 --> 00:08:26,600
+Những quốc gia theo kịp,
+
+273
+00:08:26,600 --> 00:08:28,280
+Ít nhất vẫn có thể chia sẻ một phần lợi ích.
+
+274
+00:08:28,280 --> 00:08:29,360
+Nhưng nếu không theo kịp,
+
+275
+00:08:29,360 --> 00:08:31,880
+Cơ hội tham gia cạnh tranh sẽ hoàn toàn biến mất.
+
+276
+00:08:31,880 --> 00:08:33,880
+Việc vươn lên sau đó sẽ trở nên vô cùng khó khăn.
+
+277
+00:08:34,160 --> 00:08:36,940
+Đây là một cuộc đua không có vùng đệm an toàn.
+
+278
+00:08:37,160 --> 00:08:37,900
+Bên dẫn đầu,
+
+279
+00:08:37,900 --> 00:08:39,020
+Sẽ kiểm soát thuật toán,
+
+280
+00:08:39,020 --> 00:08:40,100
+Tiêu chuẩn nền tảng,
+
+281
+00:08:40,100 --> 00:08:41,000
+Và dòng chảy của nguồn vốn.
+
+282
+00:08:41,180 --> 00:08:41,880
+Bên tụt hậu,
+
+283
+00:08:41,880 --> 00:08:43,980
+Có thể chỉ còn vai trò là nhà cung cấp dữ liệu,
+
+284
+00:08:44,120 --> 00:08:45,260
+Nguồn cung lao động,
+
+285
+00:08:45,260 --> 00:08:46,240
+Và thị trường tiêu thụ.
+
+286
+00:08:46,620 --> 00:08:48,820
+AI không chỉ là công cụ cạnh tranh của doanh nghiệp,
+
+287
+00:08:48,820 --> 00:08:51,060
+Mà còn là bộ khuếch đại sức mạnh quốc gia.
+
+288
+00:08:51,300 --> 00:08:52,460
+Thứ thực sự bị đào thải,
+
+289
+00:08:52,460 --> 00:08:53,420
+Không phải là công việc,
+
+290
+00:08:53,460 --> 00:08:54,960
+Mà là tư duy cũ.
+
+291
+00:08:55,400 --> 00:08:57,460
+Khi giới văn phòng xếp hàng bị đào thải bởi thuật toán,
+
+292
+00:08:57,460 --> 00:08:59,940
+Thì người thợ sửa ống nước lại xếp hàng trước trung tâm dữ liệu,
+
+293
+00:08:59,940 --> 00:09:01,000
+Đón nhận cơ hội mới.
+
+294
+00:09:01,200 --> 00:09:03,260
+Từ sự xáo trộn nghề nghiệp đến cuộc cạnh tranh quốc gia,
+
+295
+00:09:03,260 --> 00:09:04,880
+Hệ trục giá trị,
+
+296
+00:09:04,880 --> 00:09:06,160
+Đang đảo chiều mạnh mẽ.
+
+297
+00:09:06,160 --> 00:09:08,860
+AI đang tái cấu trúc trật tự công nghiệp,
+
+298
+00:09:08,860 --> 00:09:11,240
+Viết lại vị thế của các quốc gia trên bản đồ thế giới,
+
+299
+00:09:11,240 --> 00:09:13,240
+Và cả tiến trình lịch sử của nhân loại.
+

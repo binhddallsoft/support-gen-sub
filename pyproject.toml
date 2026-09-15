@@ -1,0 +1,78 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "srtgen"
+version = "0.1.0"
+description = "YouTube/audio -> Whisper -> 4-line Chinese/pinyin .srt that satisfies the format contract by construction"
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "Proprietary" }
+
+dependencies = [
+    "jieba>=0.42.1",
+    "pypinyin>=0.53",
+    "opencc-python-reimplemented>=0.1.7",
+    "PyYAML>=6.0",
+    "typer>=0.12",
+    "rich>=13.0",
+    "platformdirs>=4.0",
+]
+
+[project.optional-dependencies]
+asr = ["faster-whisper>=1.1.0"]
+dl  = ["yt-dlp>=2024.1.1"]
+ai  = ["httpx>=0.27"]
+# Giao diện web (`srtgen ui`). Ghim ĐÚNG phiên bản của
+# installer/requirements-macos.txt: đó là bộ đã biết là có sẵn gói biên dịch cho
+# Mac chip Intel + Python 3.12. Để trình cài tự chọn bản mới nhất thì một ngày nó
+# kéo về pydantic-core chỉ có cho Apple Silicon và đòi Xcode để tự biên dịch.
+# python-multipart: thiếu nó thì kéo thả file video / .srt lên trang không chạy.
+web = [
+    "fastapi==0.115.6",
+    "uvicorn==0.32.1",
+    "python-multipart==0.0.20",
+]
+dev = ["pytest>=8.0", "pytest-cov>=5.0"]
+all = [
+    "faster-whisper>=1.1.0",
+    "yt-dlp>=2024.1.1",
+    "httpx>=0.27",
+    "fastapi==0.115.6",
+    "uvicorn==0.32.1",
+    "python-multipart==0.0.20",
+    "pytest>=8.0",
+]
+
+[project.scripts]
+srtgen = "srtgen.cli:main"
+
+[tool.setuptools]
+# Thư mục chỉ chứa dữ liệu (config/, web/static/) cũng phải khai báo ở đây như một
+# package. setuptools coi mọi thư mục nằm trong package là một package "ngầm"; ship
+# file của nó mà không khai báo chính nó thì setuptools cảnh báo "Package
+# 'srtgen.web.static' is absent from the `packages` configuration" — và báo trước
+# rằng bản sau sẽ KHÔNG chép các file đó vào bản cài nữa. Với web/static thế nghĩa
+# là bản cài bằng pip chạy được máy chủ nhưng mở trình duyệt chỉ thấy trang "chưa
+# cài phần giao diện". Thêm thư mục dữ liệu mới thì thêm cả dòng ở đây.
+packages = [
+    "srtgen",
+    "srtgen.config",
+    "srtgen.core",
+    "srtgen.stages",
+    "srtgen.providers",
+    "srtgen.web",
+    "srtgen.web.static",
+]
+
+[tool.setuptools.package-data]
+# "web/static/*" là toàn bộ giao diện (index.html, app.js, style.css). Thiếu dòng
+# này thì bản cài bằng pip chạy được máy chủ nhưng mở trình duyệt chỉ thấy trang
+# "chưa cài phần giao diện".
+"srtgen" = ["config/*.yaml", "config/*.json", "config/names/*.json", "web/static/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]

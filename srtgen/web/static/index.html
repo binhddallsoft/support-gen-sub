@@ -1,0 +1,1654 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="light dark">
+<title>SrtGen — Tạo phụ đề tiếng Trung</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- ===================================================================== -->
+<!-- Bộ biểu tượng. Vẽ thẳng trong trang bằng SVG để tool chạy được hoàn   -->
+<!-- toàn offline: không tải font icon, không gọi CDN.                     -->
+<!-- ===================================================================== -->
+<svg class="sprite" aria-hidden="true" focusable="false">
+  <symbol id="i-create" viewBox="0 0 24 24"><path d="M12 3v4M12 17v4M4.9 7.6l2.8 2.8M16.3 13.6l2.8 2.8M3 12h4M17 12h4M4.9 16.4l2.8-2.8M16.3 10.4l2.8-2.8"/><circle cx="12" cy="12" r="2.4"/></symbol>
+  <symbol id="i-check-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 14.5l2 2 4-4.5"/></symbol>
+  <symbol id="i-names" viewBox="0 0 24 24"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 20a5.5 5.5 0 0 1 11 0"/><path d="M16 8h5M16 12h5M16 16h3"/></symbol>
+  <symbol id="i-settings" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.6l1.5 2.2 2.6-.5.6 2.6 2.4 1.1-1 2.5 1 2.5-2.4 1.1-.6 2.6-2.6-.5L12 21.4l-1.5-2.2-2.6.5-.6-2.6-2.4-1.1 1-2.5-1-2.5 2.4-1.1.6-2.6 2.6.5z"/></symbol>
+  <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M8 8l4-4 4 4"/><path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3"/></symbol>
+  <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 13a4 4 0 0 0 5.7.4l2.8-2.8a4 4 0 0 0-5.7-5.7l-1.6 1.6"/><path d="M14 11a4 4 0 0 0-5.7-.4l-2.8 2.8a4 4 0 0 0 5.7 5.7l1.6-1.6"/></symbol>
+  <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5z"/></symbol>
+  <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/></symbol>
+  <symbol id="i-ok" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8 12.5l2.6 2.6L16 9.5"/></symbol>
+  <symbol id="i-err" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></symbol>
+  <symbol id="i-warn" viewBox="0 0 24 24"><path d="M10.3 3.9 2.5 17.5A2 2 0 0 0 4.2 20.5h15.6a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4.5M12 17h.01"/></symbol>
+  <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+  <symbol id="i-wait" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></symbol>
+  <symbol id="i-skip" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12h7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5.2l3.2 1.9"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path d="M3 7a2 2 0 0 1 2-2h4l2 2.5h8a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M8 11l4 4 4-4"/><path d="M4 18v1a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-1"/></symbol>
+  <symbol id="i-report" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/><path d="M9 13h6M9 17h4"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V7"/><path d="M6.5 7l.8 12a2 2 0 0 0 2 1.9h5.4a2 2 0 0 0 2-1.9l.8-12"/></symbol>
+  <symbol id="i-refresh" viewBox="0 0 24 24"><path d="M20 11a8 8 0 1 0-.9 4.6"/><path d="M20 5.5V11h-5.5"/></symbol>
+  <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+  <symbol id="i-eye-off" viewBox="0 0 24 24"><path d="M4 4l16 16"/><path d="M9.9 5.9A9.6 9.6 0 0 1 12 5.5c6 0 9.5 6.5 9.5 6.5a17 17 0 0 1-3.3 4.1M6.6 7.9A17 17 0 0 0 2.5 12S6 18.5 12 18.5a9.4 9.4 0 0 0 3.2-.55"/></symbol>
+  <symbol id="i-cpu" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2"/><path d="M9.5 2.5v3M14.5 2.5v3M9.5 18.5v3M14.5 18.5v3M2.5 9.5h3M2.5 14.5h3M18.5 9.5h3M18.5 14.5h3"/></symbol>
+  <symbol id="i-key" viewBox="0 0 24 24"><circle cx="8" cy="12" r="4"/><path d="M12 12h9M18 12v3.5M15.5 12v2.5"/></symbol>
+  <symbol id="i-book" viewBox="0 0 24 24"><path d="M4 5.5A1.5 1.5 0 0 1 5.5 4H11v16H5.5A1.5 1.5 0 0 1 4 18.5z"/><path d="M20 5.5A1.5 1.5 0 0 0 18.5 4H13v16h5.5a1.5 1.5 0 0 0 1.5-1.5z"/></symbol>
+  <symbol id="i-edit" viewBox="0 0 24 24"><path d="M4.5 19.5h4L19 9a2.1 2.1 0 0 0-3-3L5.5 16.5z"/><path d="M14 7.5l2.5 2.5"/><path d="M4.5 19.5l.7-4"/></symbol>
+  <symbol id="i-undo" viewBox="0 0 24 24"><path d="M4.5 9h9a5.5 5.5 0 0 1 0 11h-3"/><path d="M8 5.5 4.5 9 8 12.5"/></symbol>
+  <symbol id="i-redo" viewBox="0 0 24 24"><path d="M19.5 9h-9a5.5 5.5 0 0 0 0 11h3"/><path d="M16 5.5 19.5 9 16 12.5"/></symbol>
+  <symbol id="i-save" viewBox="0 0 24 24"><path d="M5 4h11l3 3v12.5a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 3 19.5v-14A1.5 1.5 0 0 1 4.5 4z"/><path d="M8 4v5h7"/><path d="M8 21v-5h8v5"/></symbol>
+  <symbol id="i-sound" viewBox="0 0 24 24"><path d="M4 9.5h3.2L12 5.5v13l-4.8-4H4z"/><path d="M15.8 9.4a4.2 4.2 0 0 1 0 5.2"/><path d="M18.4 6.8a8 8 0 0 1 0 10.4"/></symbol>
+  <symbol id="i-pause" viewBox="0 0 24 24"><path d="M9.5 5v14M14.5 5v14"/></symbol>
+  <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.2"/><path d="M15.6 15.6 20 20"/></symbol>
+  <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3.2 9.5h17.6M3.2 14.5h17.6"/><path d="M12 3c2.6 3 3.9 6 3.9 9s-1.3 6-3.9 9c-2.6-3-3.9-6-3.9-9s1.3-6 3.9-9z"/></symbol>
+  <symbol id="i-open" viewBox="0 0 24 24"><path d="M14 3.5h6.5V10"/><path d="M20.5 3.5 12 12"/><path d="M18 14v5.5a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 4 19.5v-11A1.5 1.5 0 0 1 5.5 7H11"/></symbol>
+  <symbol id="i-flag" viewBox="0 0 24 24"><path d="M6 21V3.5"/><path d="M6 4.5h11l-2 3.6 2 3.6H6"/></symbol>
+  <symbol id="i-keyboard" viewBox="0 0 24 24"><rect x="2.5" y="6" width="19" height="12" rx="2"/><path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M6.5 13.2h.01M10 13.2h.01M13.5 13.2h.01M17 13.2h.01M8.5 16h7"/></symbol>
+</svg>
+
+<a class="skiplink" href="#main">Bỏ qua phần đầu trang</a>
+
+<header class="appbar">
+  <div class="brand">
+    <span class="brand-mark" aria-hidden="true">字</span>
+    <span class="brand-text">
+      <strong>SrtGen</strong>
+      <small>Tạo và soát phụ đề tiếng Trung có pinyin</small>
+    </span>
+  </div>
+  <div class="appbar-side">
+    <span id="conn-pill" class="pill pill-muted" hidden></span>
+  </div>
+</header>
+
+<nav class="tabbar" role="tablist" aria-label="Các mục chính">
+  <button class="tab is-active" role="tab" id="tabbtn-create"   aria-controls="tab-create"   aria-selected="true"  data-tab="create">
+    <svg class="icon"><use href="#i-create"></use></svg><span>Tạo phụ đề</span>
+  </button>
+  <button class="tab" role="tab" id="tabbtn-edit"     aria-controls="tab-edit"     aria-selected="false" data-tab="edit">
+    <svg class="icon"><use href="#i-edit"></use></svg><span>Sửa phụ đề</span>
+  </button>
+  <button class="tab" role="tab" id="tabbtn-check"    aria-controls="tab-check"    aria-selected="false" data-tab="check">
+    <svg class="icon"><use href="#i-check-file"></use></svg><span>Kiểm tra file</span>
+  </button>
+  <button class="tab" role="tab" id="tabbtn-names"    aria-controls="tab-names"    aria-selected="false" data-tab="names">
+    <svg class="icon"><use href="#i-names"></use></svg><span>Tên riêng</span>
+  </button>
+  <button class="tab" role="tab" id="tabbtn-settings" aria-controls="tab-settings" aria-selected="false" data-tab="settings">
+    <svg class="icon"><use href="#i-settings"></use></svg><span>Cài đặt</span>
+  </button>
+  <button class="tab" role="tab" id="tabbtn-guide"    aria-controls="tab-guide"    aria-selected="false" data-tab="guide">
+    <svg class="icon"><use href="#i-book"></use></svg><span>Hướng dẫn</span>
+  </button>
+</nav>
+
+<main id="main">
+
+<!-- ===================================================================== -->
+<!-- TAB 1 — TẠO PHỤ ĐỀ                                                     -->
+<!-- ===================================================================== -->
+<section class="panel is-active" id="tab-create" role="tabpanel" aria-labelledby="tabbtn-create">
+
+  <!-- ---------- màn hình nhập nguồn ---------- -->
+  <div id="create-input" class="stack">
+
+    <div class="dropzone" id="dropzone" tabindex="0" aria-label="Ô nhận link YouTube hoặc file video">
+      <div class="dropzone-inner">
+        <svg class="dropzone-icon" aria-hidden="true"><use href="#i-upload"></use></svg>
+        <h1 class="dropzone-title">Dán link YouTube, hoặc kéo thả file video / âm thanh vào đây</h1>
+        <p class="dropzone-sub">Tool sẽ nghe toàn bộ video và tự tạo file phụ đề tiếng Trung kèm pinyin.</p>
+
+        <div class="source-row">
+          <span class="source-row-icon" aria-hidden="true"><svg class="icon"><use href="#i-link"></use></svg></span>
+          <input type="text" id="source-url" class="source-input"
+                 placeholder="https://www.youtube.com/watch?v=…  hoặc đường dẫn file trên máy"
+                 autocomplete="off" spellcheck="false" aria-label="Link YouTube hoặc đường dẫn file">
+        </div>
+
+        <div class="or-line"><span>hoặc</span></div>
+
+        <button type="button" class="btn btn-ghost btn-lg" id="btn-pick-file">
+          <svg class="icon"><use href="#i-folder"></use></svg> Chọn file từ máy
+        </button>
+        <input type="file" id="file-input" class="visually-hidden"
+               accept=".mp3,.mp4,.m4a,.wav,.mkv,.mov,.webm,.flac,.aac,.ogg,.avi">
+
+        <p class="dropzone-hint">Nhận mp3, mp4, m4a, wav, mkv, mov, webm, flac, aac, ogg, avi.</p>
+        <details class="moreinfo">
+          <summary>File nặng vài GB thì làm sao?</summary>
+          <div class="moreinfo-body">
+            <p>Dán đường dẫn file trên máy vào ô ở trên, đừng kéo thả.</p>
+            <p>Chương trình đọc thẳng file tại chỗ, không phải đưa file lên. Nhanh hơn nhiều.</p>
+          </div>
+        </details>
+      </div>
+      <div class="dropzone-overlay" aria-hidden="true">
+        <span>Thả file vào đây</span>
+      </div>
+    </div>
+
+    <div id="source-chip" class="chosen" hidden>
+      <svg class="icon chosen-icon"><use href="#i-ok"></use></svg>
+      <div class="chosen-body">
+        <div class="chosen-name" id="chosen-name"></div>
+        <div class="chosen-meta" id="chosen-meta"></div>
+      </div>
+      <button type="button" class="btn btn-quiet btn-sm" id="btn-clear-source">Bỏ chọn</button>
+    </div>
+
+    <!-- Tiến trình ĐƯA FILE LÊN. Video 2 GB mất cả phút mới đưa vào xong; không
+         có thanh chạy ở đây thì người dùng tưởng máy treo và bấm lại. -->
+    <div class="card uploadbox" id="upload-box" hidden>
+      <div class="uploadbox-head">
+        <svg class="icon uploadbox-icon" aria-hidden="true"><use href="#i-upload"></use></svg>
+        <div class="uploadbox-body">
+          <div class="uploadbox-title" id="upload-title">Đang đưa file vào chương trình…</div>
+          <div class="uploadbox-sub" id="upload-sub" aria-live="polite"></div>
+        </div>
+        <div class="uploadbox-pct" id="upload-pct">0%</div>
+      </div>
+      <div class="bar bar-lg" id="upload-bar-wrap" role="progressbar" aria-label="Tiến độ đưa file vào"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div class="bar-fill" id="upload-bar" style="width:0%"></div></div>
+      <div class="uploadbox-foot">
+        <span class="uploadbox-note">Đừng đóng tab này cho tới khi thanh chạy hết. File gốc trên máy của bạn không bị đụng tới.</span>
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-upload-cancel">Huỷ</button>
+      </div>
+    </div>
+
+    <div class="start-row">
+      <button type="button" class="btn btn-primary btn-xl" id="btn-start" disabled>
+        <svg class="icon"><use href="#i-play"></use></svg> Bắt đầu
+      </button>
+      <p class="start-note" id="start-note">Dán link hoặc chọn file trước, rồi bấm Bắt đầu.</p>
+    </div>
+
+    <details class="disclosure" id="advanced">
+      <summary>
+        <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        Cài đặt nâng cao
+        <span class="summary-note">Không bắt buộc — để nguyên cũng chạy tốt</span>
+      </summary>
+      <div class="disclosure-body">
+
+        <div class="field">
+          <span class="field-label">Chất lượng gỡ băng</span>
+          <p class="field-help">Thời gian ước tính cho một video dài 40 phút trên máy iMac 2017.</p>
+          <div class="model-list" id="model-list"><!-- js --></div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Kiểu nội dung</span>
+          <p class="field-help">Quyết định cách chia dòng phụ đề cho vừa nhịp nói.</p>
+          <div class="seg" id="profile-seg" role="radiogroup" aria-label="Kiểu nội dung">
+            <button type="button" class="seg-item is-on" data-profile="drama" role="radio" aria-checked="true">Phim / phim ngắn</button>
+            <button type="button" class="seg-item" data-profile="news" role="radio" aria-checked="false">Tin tức / phóng sự</button>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field-label">Tuỳ chọn khác</span>
+          <label class="check"><input type="checkbox" id="opt-ai"><span><b>Nhờ AI soát tên riêng và chữ khó</b><em>Cần khoá API ở tab Cài đặt. Không bật thì vẫn chạy bình thường.</em></span></label>
+          <label class="check"><input type="checkbox" id="opt-translate" checked><span><b>Dịch thêm một file phụ đề tiếng Việt</b><em>Tạo thêm file <code>_vi.srt</code> cùng số dòng, cùng mốc thời gian với bản tiếng Trung.</em></span></label>
+          <label class="check"><input type="checkbox" id="opt-demucs"><span><b>Tách giọng khỏi nhạc nền</b><em>Dành cho phim nhiều nhạc. Làm chậm khoảng 2 lần.</em></span></label>
+          <label class="check"><input type="checkbox" id="opt-ass"><span><b>Xuất thêm bản .ass cho Aegisub</b><em>Cùng nội dung, đã đặt sẵn font đọc được chữ Hán và dấu thanh.</em></span></label>
+        </div>
+
+      </div>
+    </details>
+
+    <p class="legal">
+      <svg class="icon"><use href="#i-info"></use></svg>
+      Tải nội dung từ YouTube có thể vi phạm điều khoản của họ.
+      Bạn tự cân nhắc; tool chỉ làm phần thao tác.
+    </p>
+  </div>
+
+  <!-- ---------- màn hình đang chạy ---------- -->
+  <div id="create-run" class="stack" hidden>
+
+    <div class="runhead card">
+      <div class="runhead-main">
+        <h2 class="runhead-title" id="run-title">Đang xử lý…</h2>
+        <p class="runhead-sub" id="run-sub"></p>
+      </div>
+      <div class="runhead-side">
+        <div class="runhead-pct" id="run-pct">0%</div>
+        <button type="button" class="btn btn-danger" id="btn-cancel">
+          <svg class="icon"><use href="#i-stop"></use></svg> Dừng
+        </button>
+      </div>
+      <div class="bar bar-lg"><div class="bar-fill" id="run-bar" style="width:0%"></div></div>
+    </div>
+
+    <div class="banner banner-info" id="reconnect-banner" hidden>
+      <svg class="icon spin"><use href="#i-refresh"></use></svg>
+      <div><b>Mất kết nối với chương trình.</b> Đang tự kết nối lại — công việc vẫn chạy tiếp ở nền, bạn không mất gì cả.</div>
+    </div>
+
+    <ol class="steps" id="steps"><!-- js --></ol>
+
+    <details class="disclosure" id="logbox">
+      <summary>
+        <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+        Nhật ký chi tiết
+        <span class="summary-note">Dành cho người muốn xem máy đang làm gì</span>
+      </summary>
+      <div class="disclosure-body">
+        <pre class="log" id="log" aria-live="off"></pre>
+        <div class="log-actions">
+          <button type="button" class="btn btn-quiet btn-sm" id="btn-copy-log">Chép nhật ký</button>
+          <label class="check check-inline"><input type="checkbox" id="log-follow" checked><span>Tự cuộn xuống dòng mới</span></label>
+        </div>
+      </div>
+    </details>
+  </div>
+
+  <!-- ---------- màn hình kết quả ---------- -->
+  <div id="create-done" class="stack" hidden>
+
+    <div class="banner banner-ok" id="done-banner">
+      <svg class="icon"><use href="#i-ok"></use></svg>
+      <div><b>Xong rồi.</b> <span id="done-summary"></span></div>
+    </div>
+
+    <div class="banner banner-err" id="done-errors" hidden>
+      <svg class="icon"><use href="#i-warn"></use></svg>
+      <div>
+        <b id="done-errors-title"></b>
+        <div class="banner-sub">File vẫn được ghi đầy đủ. Báo cáo nói rõ từng lỗi nằm ở dòng phụ đề số mấy.</div>
+      </div>
+      <button type="button" class="btn btn-quiet" id="btn-errors-report">Xem báo cáo</button>
+    </div>
+
+    <!-- Bản cũ đã được cất lại (hợp đồng H1). Lần chạy lại ghi file mới vào đúng
+         chỗ cũ; trước khi ghi, chặng xuất file đổi tên bản đang có (kể cả chỗ
+         người dùng đã sửa tay) thành "<tên>.truoc-<ngày giờ>…". Người dùng phải
+         THẤY điều đó — không thấy thì họ tưởng công sửa tay đã mất. -->
+    <div class="banner banner-info banner-wrap keptbox" id="done-backups" role="status" hidden>
+      <svg class="icon"><use href="#i-save"></use></svg>
+      <div>
+        <b id="done-backups-title">Bản cũ của bạn không bị mất.</b>
+        <ul class="keptlist" id="done-backups-list" hidden></ul>
+        <div class="banner-sub" id="done-backups-where"></div>
+        <div class="banner-sub">
+          Bản cũ đã được đổi tên và để ngay cạnh file mới, kể cả những chỗ bạn đã sửa tay.
+          Chương trình không bao giờ tự xoá nó.
+        </div>
+      </div>
+      <button type="button" class="btn btn-ghost btn-sm" id="btn-backups-reveal">
+        <svg class="icon"><use href="#i-folder"></use></svg> Mở thư mục
+      </button>
+    </div>
+
+    <div class="bigbtns">
+      <button type="button" class="bigbtn bigbtn-accent" id="btn-open-editor">
+        <svg class="bigbtn-icon"><use href="#i-edit"></use></svg>
+        <span class="bigbtn-title">Xem trước và sửa</span>
+        <span class="bigbtn-sub">Xem video có phụ đề, sửa tại chỗ — tải về sau</span>
+      </button>
+      <button type="button" class="bigbtn" id="btn-dl-srt">
+        <svg class="bigbtn-icon"><use href="#i-download"></use></svg>
+        <span class="bigbtn-title">Tải file .srt</span>
+        <span class="bigbtn-sub">Tiếng Trung + pinyin (tuỳ chọn, sau khi soát)</span>
+      </button>
+      <button type="button" class="bigbtn" id="btn-dl-vi">
+        <svg class="bigbtn-icon"><use href="#i-globe"></use></svg>
+        <span class="bigbtn-title">Tải file _vi.srt</span>
+        <span class="bigbtn-sub">Tiếng Việt, cùng mốc thời gian (tuỳ chọn)</span>
+      </button>
+      <button type="button" class="bigbtn" id="btn-reveal">
+        <svg class="bigbtn-icon"><use href="#i-folder"></use></svg>
+        <span class="bigbtn-title">Mở thư mục</span>
+        <span class="bigbtn-sub">Xem tất cả file vừa tạo</span>
+      </button>
+      <button type="button" class="bigbtn" id="btn-report">
+        <svg class="bigbtn-icon"><use href="#i-report"></use></svg>
+        <span class="bigbtn-title">Xem báo cáo</span>
+        <span class="bigbtn-sub">Thống kê và danh sách lỗi</span>
+      </button>
+    </div>
+
+    <div class="filelist card" id="file-list"><!-- js --></div>
+
+    <div class="card guide">
+      <h3 class="guide-title"><svg class="icon"><use href="#i-book"></use></svg> Cách soát lại bằng Aegisub</h3>
+      <p class="card-sub">Muốn soát trong Aegisub thì mở file <code>_song-ngu.ass</code> — mỗi dòng hiện đủ ba tầng: Hán, pinyin, tiếng Việt. Hai file <b>giao đi</b> vẫn là <code>.srt</code> và <code>_vi.srt</code>.</p>
+      <details class="moreinfo">
+        <summary>Năm bước mở và soát trong Aegisub</summary>
+        <div class="moreinfo-body">
+          <ol>
+            <li>Mở Aegisub, chọn <b>File &gt; Open Subtitles…</b> (<kbd>Cmd</kbd>+<kbd>O</kbd>), chọn file <code>_song-ngu.ass</code>.</li>
+            <li>Có file video thì mở thêm bằng <b>Video &gt; Open Video…</b> để nghe cho đúng câu.</li>
+            <li>Trong file <code>.srt</code>, mỗi dòng phụ đề có hai dòng chữ: trên là Hán, dưới là pinyin. Aegisub gộp lại thành một sự kiện và ngăn bằng <code>\N</code>. Đó là đúng. Đừng xoá <code>\N</code>.</li>
+            <li>Chữ Hán hiện thành ô vuông thì vào <b>Subtitle &gt; Styles Manager</b>, đổi font sang <b>PingFang SC</b> hoặc <b>Arial Unicode MS</b>.</li>
+            <li>Aegisub chỉ để soát. Thấy câu nào sai thì ghi lại số câu, rồi sửa đúng câu đó ở tab <b>Sửa phụ đề</b> và bấm <b>Lưu</b>. Đừng xuất <code>_song-ngu.ass</code> ra <code>.srt</code> để giao đi — file đó có ba dòng chữ mỗi câu.</li>
+          </ol>
+          <p><a href="/guide" target="_blank" rel="noopener">Xem hướng dẫn đầy đủ</a></p>
+        </div>
+      </details>
+    </div>
+
+    <!-- Chạy lại với bảng tên mới (POST /api/jobs/{id}/rerun, hợp đồng H3). Không
+         cần file video gốc: âm thanh và kết quả gỡ băng vẫn nằm trong work/. -->
+    <div class="card rerun-card" id="done-rerun" hidden>
+      <h3 class="card-title"><svg class="icon"><use href="#i-names"></use></svg> Vừa sửa bảng tên riêng?</h3>
+      <p class="card-sub">
+        Máy sẽ tách cụm, phiên âm và dịch lại cả phim theo bảng tên đang lưu.
+        Không cần file video gốc, không phải gỡ băng lại.
+      </p>
+      <div class="toolbar toolbar-flat">
+        <button type="button" class="btn btn-primary" id="btn-rerun-done">
+          <svg class="icon"><use href="#i-refresh"></use></svg> Chạy lại với bảng tên mới
+        </button>
+        <button type="button" class="btn btn-ghost" id="btn-done-names">
+          <svg class="icon"><use href="#i-names"></use></svg> Mở bảng tên của phim này
+        </button>
+      </div>
+      <details class="moreinfo">
+        <summary>File đang có thì sao?</summary>
+        <div class="moreinfo-body"><p>Các file đang có, kể cả chỗ bạn đã sửa tay, được đổi tên thành bản có chữ <code>.truoc-</code> và giữ nguyên trong cùng thư mục. Không mất gì.</p></div>
+      </details>
+    </div>
+
+    <div class="endrow">
+      <button type="button" class="btn btn-ghost" id="btn-again">
+        <svg class="icon"><use href="#i-refresh"></use></svg> Làm video khác
+      </button>
+    </div>
+  </div>
+
+  <!-- ---------- màn hình lỗi ---------- -->
+  <div id="create-error" class="stack" hidden>
+    <div class="card errcard">
+      <div class="errcard-head">
+        <svg class="icon icon-xl err"><use href="#i-err"></use></svg>
+        <div>
+          <h2 class="errcard-title" id="err-title">Không chạy được</h2>
+          <p class="errcard-msg" id="err-msg"></p>
+        </div>
+      </div>
+      <div class="errcard-advice" id="err-advice" hidden><!-- js: khối "Cách xử lý" --></div>
+      <div class="errcard-actions" id="err-actions"><!-- js --></div>
+      <details class="disclosure disclosure-flat" id="err-detail-box" hidden>
+        <summary>
+          <svg class="icon chev" aria-hidden="true" viewBox="0 0 24 24"><path d="M9 5l7 7-7 7"/></svg>
+          Chi tiết kỹ thuật
+          <span class="summary-note">Gửi phần này cho người hỗ trợ nếu cần</span>
+        </summary>
+        <div class="disclosure-body"><pre class="log log-sm" id="err-detail"></pre></div>
+      </details>
+    </div>
+  </div>
+
+</section>
+
+<!-- ===================================================================== -->
+<!-- TAB 2 — SỬA PHỤ ĐỀ                                                     -->
+<!-- Bảng một dòng một cue. Cột ▶ là thứ quan trọng nhất: soát phụ đề mà    -->
+<!-- không nghe lại được đúng đoạn tiếng của dòng đó thì vô nghĩa.          -->
+<!-- ===================================================================== -->
+<section class="panel" id="tab-edit" role="tabpanel" aria-labelledby="tabbtn-edit" hidden>
+
+  <!-- ---------- chưa mở phụ đề nào ---------- -->
+  <div id="edit-empty" class="stack">
+    <div class="pagehead">
+      <h1 class="pagehead-title">Sửa phụ đề</h1>
+      <p class="pagehead-sub">
+        Soát lại từng dòng ngay trong app: <b>bấm nút ▶ để nghe đúng đoạn tiếng của dòng đó</b>,
+        sửa chữ Hán, pinyin và câu tiếng Việt tại chỗ, rồi bấm Lưu. Không cần mở phần mềm khác.
+      </p>
+    </div>
+
+    <div class="card">
+      <h2 class="card-title"><svg class="icon"><use href="#i-edit"></use></svg> Mở phụ đề để sửa</h2>
+      <p class="card-sub">Có hai đường vào: mở kết quả vừa chạy xong, hoặc mở một file <code>.srt</code> có sẵn trên máy.</p>
+
+      <div class="field">
+        <span class="field-label">Kết quả vừa tạo</span>
+        <p class="field-help">Chạy xong một video ở tab “Tạo phụ đề” rồi bấm nút <b>Kiểm tra và sửa</b> ở màn hình kết quả là vào thẳng đây.</p>
+        <button type="button" class="btn btn-primary" id="btn-edit-last" hidden>
+          <svg class="icon"><use href="#i-open"></use></svg> Mở lại kết quả gần nhất
+        </button>
+      </div>
+
+      <div class="field">
+        <label class="field-label" for="edit-open-path">Hoặc mở file có sẵn trên máy</label>
+        <p class="field-help">Bấm <b>Chọn file .srt…</b> rồi chọn file. Muốn soát cả bản tiếng Việt thì chọn <b>cùng lúc</b>
+          hai file <code>TenPhim.srt</code> và <code>TenPhim_vi.srt</code> (giữ phím <kbd>Cmd</kbd> khi bấm) — tool tự ghép cặp.
+          Hoặc dán đường dẫn file <code>.srt</code>: có file <code>_vi.srt</code> nằm cạnh thì tool mở luôn cả hai.</p>
+        <div class="input-row">
+          <button type="button" class="btn btn-primary" id="btn-edit-pick">
+            <svg class="icon"><use href="#i-open"></use></svg> Chọn file .srt…
+          </button>
+          <input type="file" id="edit-open-files" class="visually-hidden" accept=".srt" multiple>
+        </div>
+        <div class="input-row input-row-gap">
+          <input type="text" id="edit-open-path" class="input" placeholder="/Users/ban/Movies/TenPhim.srt" spellcheck="false" autocomplete="off">
+          <button type="button" class="btn btn-ghost" id="btn-edit-open-path">
+            <svg class="icon"><use href="#i-folder"></use></svg> Mở file này
+          </button>
+        </div>
+        <p class="field-status" id="edit-open-status"></p>
+      </div>
+    </div>
+
+    <div class="card note-card">
+      <svg class="icon"><use href="#i-info"></use></svg>
+      <div>
+        Trình sửa giữ nguyên số dòng và mốc thời gian của cả hai bản, nên bản tiếng Trung và bản tiếng Việt
+        luôn khớp nhau. Mọi thay đổi được <b>tự lưu nháp mỗi 5 giây</b>, đóng nhầm tab cũng không mất công.
+      </div>
+    </div>
+  </div>
+
+  <!-- ---------- bảng sửa ---------- -->
+  <div id="edit-work" hidden>
+
+    <!-- Một tầng duy nhất: bên trái là "đang sửa cái gì", bên phải là những nút
+         tác động lên CẢ TÀI LIỆU (hoàn tác, hoàn nguyên, Lưu). Nút Lưu là nút
+         nhấn duy nhất của màn hình này. Các nút chỉ tác động lên BẢNG (lọc, tìm,
+         xuất file) ở lại thanh công cụ của bảng bên phải. -->
+    <div class="edithead">
+      <div class="edithead-id">
+        <h1 class="edithead-title" id="edit-title">Sửa phụ đề</h1>
+        <p class="edithead-sub" id="edit-sub"></p>
+      </div>
+      <div class="edithead-actions">
+        <button type="button" class="btn btn-quiet btn-icon" id="btn-edit-undo" aria-label="Hoàn tác" title="Hoàn tác (Ctrl+Z)" disabled>
+          <svg class="icon"><use href="#i-undo"></use></svg>
+        </button>
+        <button type="button" class="btn btn-quiet btn-icon" id="btn-edit-redo" aria-label="Làm lại" title="Làm lại (Ctrl+Shift+Z)" disabled>
+          <svg class="icon"><use href="#i-redo"></use></svg>
+        </button>
+        <span class="hair"></span>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-edit-revert" title="Hoàn nguyên về bản máy tạo">
+          <svg class="icon"><use href="#i-refresh"></use></svg> Hoàn nguyên
+        </button>
+        <button type="button" class="btn btn-quiet btn-icon" id="btn-edit-keys" title="Phím tắt (?)" aria-label="Phím tắt">
+          <svg class="icon"><use href="#i-keyboard"></use></svg>
+        </button>
+        <span class="hair"></span>
+        <button type="button" class="btn btn-primary" id="btn-edit-save">
+          <svg class="icon"><use href="#i-save"></use></svg> <span id="btn-edit-save-label">Lưu</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Thanh báo bản nháp. KHÔNG tự khôi phục: người dùng mở file ra mà thấy
+         nội dung khác file họ vừa mở thì sẽ tưởng tool tự đổi bậy. Chỉ hỏi. -->
+    <div class="banner banner-warn draftbar" id="edit-draft-bar" hidden>
+      <svg class="icon"><use href="#i-clock"></use></svg>
+      <div>
+        <b id="edit-draft-title">Bạn có bản sửa chưa lưu.</b>
+        <div class="banner-sub" id="edit-draft-detail"></div>
+        <div class="banner-sub draftbar-note">Chưa chọn thì tool tạm dừng tự lưu nháp, để bản nháp cũ không bị ghi đè.</div>
+        <div class="banner-sub draftbar-warn" id="edit-draft-newer" hidden>
+          Lưu ý: file đã được ghi lại sau lúc bạn sửa dở. Khôi phục sẽ đè lên bản mới hơn.
+        </div>
+      </div>
+      <div class="draftbar-actions">
+        <button type="button" class="btn btn-primary btn-sm" id="btn-draft-restore">Khôi phục bản sửa</button>
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-draft-drop">Bỏ bản nháp</button>
+      </div>
+    </div>
+
+    <!-- Mở file bằng NỘI DUNG (chọn file / kéo thả): trình duyệt không cho biết file
+         gốc nằm đâu nên không ghi đè được lên nó. Lưu xong phải nói rõ bản đã sửa
+         nằm ở đâu và tải ngay về máy — không thì người dùng tưởng đã lưu vào file
+         gốc, đóng app, và mất công sửa (hợp đồng H6). -->
+    <div class="banner banner-ok banner-wrap savednote" id="edit-saved-note" role="status" hidden>
+      <svg class="icon"><use href="#i-ok"></use></svg>
+      <div>
+        <b id="edit-saved-title">Đã lưu và tải về máy.</b>
+        <div class="banner-sub" id="edit-saved-where">Đã lưu vào: <code class="savednote-path" id="edit-saved-path"></code></div>
+        <div class="banner-sub">
+          File bạn chọn lúc mở vẫn nguyên như cũ: trình duyệt không cho ghi đè thẳng lên nó. Bản đã sửa nằm ở
+          thư mục trên, và một bản nữa vừa được tải về thư mục Tải về (Downloads) của máy. Nếu trình duyệt chặn
+          tải nhiều file cùng lúc, bấm các nút “Tải lại” bên cạnh.
+        </div>
+      </div>
+      <div class="draftbar-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-saved-reveal">
+          <svg class="icon"><use href="#i-folder"></use></svg> Mở thư mục
+        </button>
+        <span class="savednote-dl" id="edit-saved-dl"></span>
+        <button type="button" class="btn btn-quiet btn-sm" id="btn-saved-hide">Ẩn</button>
+      </div>
+    </div>
+
+    <div class="workbench" id="workbench">
+    <div class="wb-left" id="wb-left">
+      <!-- ---------- xem trước: video có phụ đề đè lên, chạy đồng bộ với bảng ----------
+           Soát phụ đề là NHÌN chữ trên hình đúng lúc người ta nói. Khung này dính ở
+           trên, bảng cuộn bên dưới, giống cách Aegisub xếp màn hình. -->
+      <div class="preview" id="edit-preview" hidden>
+        <div class="preview-stage" id="preview-stage">
+          <video id="edit-video" preload="metadata" playsinline></video>
+          <div class="preview-noimage" id="preview-noimage" hidden>
+            <svg class="icon"><use href="#i-sound"></use></svg>
+            <span id="preview-noimage-text">Chỉ có tiếng, không có hình.</span>
+          </div>
+          <div class="preview-overlay" id="preview-overlay">
+            <div class="ov-line ov-zh zh" id="ov-zh"></div>
+            <div class="ov-line ov-py py" id="ov-py"></div>
+            <div class="ov-line ov-vi" id="ov-vi"></div>
+          </div>
+        </div>
+        <div class="preview-bar">
+          <button type="button" class="btn btn-primary btn-icon" id="pv-play" title="Phát / dừng (Shift+Space)" aria-label="Phát hoặc dừng">
+            <svg class="icon"><use href="#i-play"></use></svg>
+          </button>
+          <!-- Chỉ còn mũi tên: hai nút này trùng việc với "▲ Trước / ▼ Sau" trong hộp
+               sửa dòng (ở đó có chữ đầy đủ) và có phím tắt, nên không mất đường vào.
+               Bỏ chữ để cả thanh dưới video nằm gọn một hàng 34px. -->
+          <button type="button" class="btn btn-quiet btn-sm" id="pv-prev" title="Nhảy về dòng trước" aria-label="Nhảy về dòng trước">◀</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="pv-next" title="Nhảy tới dòng sau" aria-label="Nhảy tới dòng sau">▶</button>
+          <input type="range" id="pv-seek" class="pv-seek" min="0" max="1000" value="0" aria-label="Tua video">
+          <span class="pv-time" id="pv-time">00:00 / 00:00</span>
+          <select id="pv-rate" class="pv-select" title="Tốc độ phát" aria-label="Tốc độ phát">
+            <option value="0.75">0,75×</option>
+            <option value="1" selected>1×</option>
+            <option value="1.25">1,25×</option>
+            <option value="1.5">1,5×</option>
+          </select>
+          <button type="button" class="btn btn-quiet btn-sm" id="pv-size" title="Thu nhỏ / phóng to khung video">Thu nhỏ</button>
+        </div>
+        <div class="preview-bar preview-bar-2">
+          <span class="pv-group"><b>Hiện chữ:</b>
+            <label class="pv-check"><input type="checkbox" id="pv-show-zh" checked> Hán</label>
+            <label class="pv-check"><input type="checkbox" id="pv-show-py" checked> Pinyin</label>
+            <label class="pv-check"><input type="checkbox" id="pv-show-vi" checked> Việt</label>
+          </span>
+          <label class="pv-check"><input type="checkbox" id="pv-follow" checked> Bảng chạy theo video</label>
+          <span class="toolbar-gap"></span>
+        </div>
+        <div class="banner preview-note" id="preview-note" hidden>
+          <svg class="icon"><use href="#i-info"></use></svg>
+          <div><span id="preview-note-text"></span></div>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-fetch-preview" hidden>
+            <svg class="icon"><use href="#i-download"></use></svg> Tải video để xem trước
+          </button>
+        </div>
+      </div>
+
+      <!-- dạng sóng: đặt mốc bằng mắt, kéo hai mép của dòng đang chọn -->
+      <div class="wave" id="wave" title="Bấm để tua. Kéo mép trái/phải của vùng xanh để chỉnh mốc dòng đang chọn.">
+        <canvas id="wave-canvas"></canvas>
+        <div class="wave-empty" id="wave-empty" hidden>Chưa có dạng sóng</div>
+      </div>
+
+      <!-- ô sửa dòng đang chọn: nhìn video, sửa ngay tại đây, Ctrl+Enter sang dòng sau -->
+    </div><!-- /wb-left -->
+
+    <div class="wb-right" id="wb-right">
+    <div class="editsticky">
+      <div class="editbar">
+        <div class="chips" id="edit-filters" role="group" aria-label="Lọc dòng phụ đề">
+          <button type="button" class="chip is-on" data-filter="all" aria-pressed="true">Tất cả</button>
+          <button type="button" class="chip" data-filter="error" aria-pressed="false">Có lỗi</button>
+          <button type="button" class="chip" data-filter="flag" aria-pressed="false">AI chưa duyệt</button>
+          <button type="button" class="chip" data-filter="novi" aria-pressed="false">Chưa có tiếng Việt</button>
+          <button type="button" class="chip" data-filter="unreviewed" aria-pressed="false">Chưa soát</button>
+        </div>
+
+        <label class="searchbox">
+          <svg class="icon" aria-hidden="true"><use href="#i-search"></use></svg>
+          <input type="search" id="edit-search" placeholder="Tìm chữ trong phụ đề…" aria-label="Tìm chữ trong phụ đề" autocomplete="off">
+        </label>
+
+        <span class="toolbar-gap"></span>
+
+        <button type="button" class="btn btn-quiet btn-icon" id="btn-edit-findreplace" title="Tìm và thay thế (Ctrl+H)" aria-label="Tìm và thay thế">
+          <svg class="icon"><use href="#i-search"></use></svg>
+        </button>
+        <button type="button" class="btn btn-ghost btn-sm" id="btn-edit-export" title="Tải file về máy — tuỳ chọn, sau khi đã soát xong">
+          <svg class="icon"><use href="#i-download"></use></svg> Xuất file…
+        </button>
+      </div>
+
+      <!-- Xuất file là bước CUỐI và là tuỳ chọn: soát xong trên web rồi mới tải. -->
+      <div class="exportbox" id="edit-export" hidden>
+        <div class="exportbox-head">
+          <b>Tải file về máy</b>
+          <span class="exportbox-sub">Chưa lưu thì bấm <b>Lưu</b> trước, file tải về mới có phần vừa sửa.</span>
+          <button type="button" class="btn btn-quiet btn-sm" id="btn-export-close">Đóng</button>
+        </div>
+        <div class="exportbox-list" id="edit-export-list"></div>
+      </div>
+
+    </div>
+
+    <!-- Băng đỏ: file trên đĩa có nhiều đoạn hơn số đoạn tool đọc được. Đây là
+         chỗ duy nhất người dùng biết rằng bấm Lưu sẽ làm mất phần chênh lệch. -->
+    <div class="banner banner-err" id="edit-parse-note" role="alert" hidden>
+      <svg class="icon"><use href="#i-warn"></use></svg>
+      <div>
+        <b id="edit-parse-title"></b>
+        <div class="banner-sub" id="edit-parse-why"></div>
+      </div>
+    </div>
+
+    <div class="banner banner-warn" id="edit-translate-note" hidden>
+      <svg class="icon"><use href="#i-globe"></use></svg>
+      <div>
+        <b id="edit-translate-title">Còn dòng chưa dịch sang tiếng Việt.</b>
+        <div class="banner-sub" id="edit-translate-why"></div>
+      </div>
+      <button type="button" class="btn btn-primary btn-sm" id="btn-edit-retranslate-all">
+        <svg class="icon"><use href="#i-refresh"></use></svg> Dịch lại toàn bộ tiếng Việt
+      </button>
+    </div>
+    <div class="banner banner-warn" id="edit-audio-note" hidden>
+      <svg class="icon"><use href="#i-warn"></use></svg>
+      <div>
+        <b>Chưa nghe lại được.</b>
+        <div class="banner-sub" id="edit-audio-why"></div>
+      </div>
+    </div>
+
+    <!-- Hàng tiêu đề nằm TRONG vùng cuộn của bảng: có vậy `position: sticky` mới
+         bám đúng vùng đó, và khi phóng to chữ khiến bảng phải cuộn ngang thì tên
+         cột vẫn trượt cùng với cột của nó. -->
+    <div class="cuetable" id="cue-table">
+      <div class="cuehead" aria-hidden="true">
+        <div class="cue-c-n">#</div>
+        <div class="cue-c-time">Thời gian</div>
+        <div class="cue-c-play">Nghe</div>
+        <div>Tiếng Trung</div>
+        <div>Pinyin</div>
+        <div>Tiếng Việt</div>
+        <div class="cue-c-warn">Lỗi</div>
+      </div>
+      <div class="cuerows" id="cue-rows"></div>
+      <div class="emptybox" id="cue-empty" hidden></div>
+    </div>
+
+    <div class="editfoot">
+      <div class="editfoot-stats" id="edit-stats"></div>
+      <span class="editbar-status" id="edit-draft-status"></span>
+      <div class="editfoot-keys">
+        <svg class="icon" aria-hidden="true"><use href="#i-keyboard"></use></svg>
+        <span>
+          <kbd>Ctrl</kbd>+<kbd>Enter</kbd> xong &amp; dòng sau ·
+          <kbd>Ctrl</kbd>+<kbd>Shift</kbd>+<kbd>Enter</kbd> thêm dòng ·
+          <kbd>Ctrl</kbd>+<kbd>↑</kbd><kbd>↓</kbd> đổi dòng ·
+          <kbd>Ctrl</kbd>+<kbd>Space</kbd> nghe dòng ·
+          <kbd>Shift</kbd>+<kbd>Space</kbd> phát/dừng ·
+          <kbd>Ctrl</kbd>+<kbd>[</kbd> <kbd>]</kbd> mốc = video ·
+          <kbd>Ctrl</kbd>+<kbd>Z</kbd> hoàn tác ·
+          <kbd>?</kbd> tất cả phím tắt
+        </span>
+      </div>
+    </div>
+    </div><!-- /wb-right -->
+
+    <!-- DẢI SỬA DÒNG: trải hết bề ngang, nằm dưới cùng.
+         Trước đây khối này nằm trong cột trái rộng 490px. Đo ở 1440x900:
+         hàng đầu xuống 2 dòng, hàng nút xuống 2 dòng, và ba ô nhập chỉ còn
+         60px trong khi cần 208px — tức là phải cuộn trong một cửa sổ 60px
+         để với tới ô Tiếng Việt, 340 lần mỗi ngày. Trải ngang thì cả ba ô
+         nằm cạnh nhau và nhìn thấy trọn vẹn. -->
+    <div class="cuebox" id="cuebox">
+        <div class="cuebox-head">
+          <b class="cuebox-n" id="cb-n">Chưa chọn dòng</b>
+          <span class="cuebox-time">
+            <input type="text" id="cb-start" class="cb-time" spellcheck="false" aria-label="Mốc bắt đầu" title="Mốc bắt đầu (Ctrl+[ = lấy vị trí video)">
+            <span>→</span>
+            <input type="text" id="cb-end" class="cb-time" spellcheck="false" aria-label="Mốc kết thúc" title="Mốc kết thúc (Ctrl+] = lấy vị trí video)">
+            <span class="cuebox-dur" id="cb-dur"></span>
+          </span>
+          <span class="cuebox-cps" id="cb-cps" title="Tốc độ đọc: số chữ Hán mỗi giây. Trên 9 là hơi nhanh, trên 12 là khó đọc kịp."></span>
+          <span class="toolbar-gap"></span>
+          <label class="pv-check" title="Bấm chọn dòng nào là nghe/xem ngay dòng đó"><input type="checkbox" id="cb-autoplay" checked> Tự phát khi chọn</label>
+          <label class="pv-check" title="Lặp đi lặp lại dòng đang chọn (Ctrl+L)"><input type="checkbox" id="cb-loop"> Lặp dòng</label>
+          <span class="pv-group" id="pv-timing" title="Chỉnh mốc thời gian của dòng đang chọn theo vị trí video">
+            <b>Mốc dòng đang chọn:</b>
+            <button type="button" class="btn btn-ghost btn-sm" id="pv-set-start">Bắt đầu = vị trí video</button>
+            <button type="button" class="btn btn-ghost btn-sm" id="pv-set-end">Kết thúc = vị trí video</button>
+            <button type="button" class="btn btn-quiet btn-sm" id="pv-nudge-back" title="Dịch cả dòng sớm hơn 0,1 giây">−0,1s</button>
+            <button type="button" class="btn btn-quiet btn-sm" id="pv-nudge-fwd" title="Dịch cả dòng muộn hơn 0,1 giây">+0,1s</button>
+          </span>
+
+        </div>
+
+        <!-- Chỉ tầng giữa này được cuộn khi hộp thiếu chỗ; nhờ vậy hàng nút
+             "✓ Xong, dòng sau" luôn dính đáy hộp, không bao giờ bị cuộn mất. -->
+        <div class="cuebox-fields">
+          <label class="cb-label" for="cb-zh">Tiếng Trung <span class="cb-count" id="cb-zh-count"></span></label>
+          <textarea id="cb-zh" class="cb-field zh" rows="2" spellcheck="false"></textarea>
+
+          <label class="cb-label" for="cb-py">Pinyin <span class="cb-count" id="cb-py-count"></span>
+            <button type="button" class="btn btn-quiet btn-xs" id="cb-regen" title="Tách cụm và sinh pinyin lại từ dòng chữ Hán">Sinh lại pinyin</button>
+          </label>
+          <textarea id="cb-py" class="cb-field py" rows="2" spellcheck="false"></textarea>
+
+          <label class="cb-label" for="cb-vi">Tiếng Việt
+            <button type="button" class="btn btn-quiet btn-xs" id="cb-retranslate" title="Dịch lại câu này bằng AI (có ngữ cảnh các câu quanh nó)">Dịch lại câu này</button>
+          </label>
+          <textarea id="cb-vi" class="cb-field" rows="2"></textarea>
+        </div>
+
+        <div class="cuebox-actions">
+          <button type="button" class="btn btn-ghost btn-sm" id="cb-play" title="Nghe/xem đúng đoạn của dòng này (Ctrl+Space)">▶ Nghe dòng</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-prev" title="Dòng trước (Ctrl+↑)">▲ Trước</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-next" title="Dòng sau (Ctrl+↓)">▼ Sau</button>
+          <span class="cuebox-sep"></span>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-insert" title="Chen một dòng phụ đề mới ngay sau dòng này, lấy mốc giờ ở vị trí video đang dừng (Ctrl+Shift+Enter)">＋ Thêm dòng</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-split" title="Tách dòng làm hai tại vị trí con trỏ trong ô Tiếng Trung">Tách tại con trỏ</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-merge" title="Gộp dòng này với dòng ngay sau">Gộp với dòng sau</button>
+          <button type="button" class="btn btn-quiet btn-sm" id="cb-delete" title="Xoá dòng này">Xoá dòng</button>
+          <span class="toolbar-gap"></span>
+          <button type="button" class="btn btn-primary btn-sm" id="cb-done" title="Đánh dấu đã soát và chuyển sang dòng sau (Ctrl+Enter)">✓ Xong, dòng sau</button>
+        </div>
+
+        <div class="cuebox-progress" title="Số dòng đã đánh dấu ✓ Xong">
+          <div class="bar"><div id="cb-progress-bar"></div></div>
+          <span id="cb-progress-text"></span>
+        </div>
+      </div>
+    </div><!-- /workbench -->
+  </div>
+
+  <audio id="edit-audio" preload="none" class="visually-hidden"></audio>
+</section>
+
+<!-- ===================================================================== -->
+<!-- TAB 3 — KIỂM TRA FILE                                                  -->
+<!-- ===================================================================== -->
+<section class="panel" id="tab-check" role="tabpanel" aria-labelledby="tabbtn-check" hidden>
+
+  <div class="pagehead">
+    <h1 class="pagehead-title">Kiểm tra và sửa file .srt</h1>
+    <p class="pagehead-sub">
+      Dùng cho file bên dịch gửi sang. Thả file vào đây, tool soát lỗi và sửa giúp —
+      chỉ vài giây, không phải gỡ băng lại.
+    </p>
+    <details class="moreinfo">
+      <summary>Tool soát những gì, trả về file nào</summary>
+      <div class="moreinfo-body">
+        <p><b>Soát ba thứ:</b></p>
+        <ul>
+          <li>Dòng Hán và dòng pinyin phải cùng số cụm.</li>
+          <li>Dấu câu phải là dấu tiếng Trung.</li>
+          <li>Không thừa khoảng trắng.</li>
+        </ul>
+        <p><b>Trả về:</b> file chỉ có Hán và pinyin thì được một file đã sửa. File có thêm dòng tiếng Việt (mỗi khối ba dòng: Hán, pinyin, Việt) thì được hai file — <code>tên.srt</code> giữ Hán và pinyin, <code>tên_vi.srt</code> giữ tiếng Việt, cùng mốc thời gian. Tool tải về cả hai.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="dropzone dropzone-sm" id="check-drop" tabindex="0" aria-label="Ô nhận file .srt">
+    <div class="dropzone-inner">
+      <svg class="dropzone-icon" aria-hidden="true"><use href="#i-check-file"></use></svg>
+      <h2 class="dropzone-title">Kéo thả một hoặc nhiều file .srt vào đây</h2>
+      <button type="button" class="btn btn-ghost" id="btn-pick-srt">
+        <svg class="icon"><use href="#i-folder"></use></svg> Chọn file .srt
+      </button>
+      <input type="file" id="srt-input" class="visually-hidden" accept=".srt,text/plain" multiple>
+    </div>
+    <div class="dropzone-overlay" aria-hidden="true"><span>Thả file vào đây</span></div>
+  </div>
+
+  <div class="toolbar" id="check-toolbar" hidden>
+    <button type="button" class="btn btn-primary" id="btn-check-all"><svg class="icon"><use href="#i-ok"></use></svg> Kiểm tra tất cả</button>
+    <button type="button" class="btn btn-ghost" id="btn-fix-all"><svg class="icon"><use href="#i-download"></use></svg> Sửa tất cả và tải về</button>
+    <span class="toolbar-gap"></span>
+    <button type="button" class="btn btn-quiet" id="btn-clear-files">Xoá danh sách</button>
+  </div>
+
+  <div id="check-files" class="stack"><!-- js --></div>
+
+  <div class="card openlocal">
+    <h2 class="card-title"><svg class="icon"><use href="#i-edit"></use></svg> Mở file có sẵn vào trình sửa</h2>
+    <p class="card-sub">Muốn sửa tay từng dòng thì mở file sang tab “Sửa phụ đề”. Không phải gỡ băng lại.</p>
+    <div class="input-row">
+      <button type="button" class="btn btn-primary" id="btn-open-local-pick">
+        <svg class="icon"><use href="#i-open"></use></svg> Chọn file .srt…
+      </button>
+      <input type="file" id="open-local-files" class="visually-hidden" accept=".srt" multiple>
+    </div>
+    <div class="input-row input-row-gap">
+      <input type="text" id="open-local-path" class="input" placeholder="/Users/ban/Movies/TenPhim.srt" spellcheck="false" autocomplete="off">
+      <button type="button" class="btn btn-ghost" id="btn-open-local">
+        <svg class="icon"><use href="#i-edit"></use></svg> Mở theo đường dẫn
+      </button>
+    </div>
+    <p class="field-status" id="open-local-status"></p>
+    <details class="moreinfo">
+      <summary>Mở cả bản tiếng Việt cùng lúc</summary>
+      <div class="moreinfo-body">
+        <p>Bấm <b>Chọn file .srt…</b>, giữ phím <kbd>Cmd</kbd> rồi chọn cả <code>TenPhim.srt</code> lẫn <code>TenPhim_vi.srt</code>. Tool tự ghép cặp hai file.</p>
+        <p>Hoặc dán đường dẫn file <code>.srt</code> vào ô dưới. Có <code>_vi.srt</code> nằm cạnh thì tool mở luôn cả hai.</p>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- TAB 4 — TÊN RIÊNG                                                      -->
+<!-- ===================================================================== -->
+<section class="panel" id="tab-names" role="tabpanel" aria-labelledby="tabbtn-names" hidden>
+
+  <div class="pagehead">
+    <h1 class="pagehead-title">Bảng tên riêng của phim</h1>
+    <p class="pagehead-sub">
+      Tên nhân vật, địa danh, tên tác phẩm của một phim. Ghi một lần ở đây thì cả phim dùng
+      đúng <b>một cách viết</b>, cả bản tiếng Trung lẫn bản dịch.
+    </p>
+    <details class="moreinfo">
+      <summary>Cách ghi cho đúng</summary>
+      <div class="moreinfo-body">
+        <p>Cột <b>Chữ Hán</b> và cột <b>Pinyin</b> phải có cùng số cụm, ngăn nhau bằng dấu cách — giống hệt cách chúng xuất hiện trong file phụ đề.</p>
+        <p>Ví dụ: <span class="zh">陈 路周</span> đi với <span class="py">Chén Lùzhōu</span> — hai cụm. <span class="zh">谈 胥</span> đi với <span class="py">Tán Xū</span> — hai cụm.</p>
+        <p>Cột <b>Tên tiếng Việt</b> là tên bạn muốn thấy trong bản dịch. Ví dụ <span class="zh">光头强</span> ghi là <b>Cường đầu trọc</b>. Để trống thì máy tự phiên âm.</p>
+        <p>Phim chưa có bảng tên (thường gặp khi không bật AI) vẫn nằm trong ô <b>Phim</b>, ở nhóm “chưa có bảng”. Chọn phim đó rồi bấm <b>Thêm tên</b>. Bảng được tạo khi bạn bấm <b>Lưu bảng tên</b>.</p>
+      </div>
+    </details>
+  </div>
+
+  <div class="names-contextbar">
+    <label class="inline-field">
+      <span>Phim</span>
+      <select id="names-video" class="select"></select>
+    </label>
+    <button type="button" class="btn btn-quiet btn-sm" id="btn-names-reload"><svg class="icon"><use href="#i-refresh"></use></svg> Nạp lại</button>
+    <button type="button" class="btn btn-quiet btn-sm" id="btn-names-new"><svg class="icon"><use href="#i-plus"></use></svg> Lập bảng cho phim khác</button>
+  </div>
+
+  <!-- File bảng tên CÓ mà HỎNG: máy chủ đọc ra bảng rỗng kèm corrupt=true. Phải
+       hiện cảnh báo, không được hiện "bảng đang trống" — với người dùng, "trống"
+       nghĩa là gõ lại vài tên rồi Lưu, và bảng cũ coi như mất (hợp đồng H4). -->
+  <div class="banner banner-warn banner-wrap names-banner" id="names-corrupt" role="alert" hidden>
+    <svg class="icon"><use href="#i-warn"></use></svg>
+    <div>
+      <b>File bảng tên của phim này bị hỏng nên chưa đọc được tên nào.</b>
+      <div class="banner-sub" id="names-corrupt-msg"></div>
+      <div class="banner-sub" id="names-corrupt-keep"></div>
+    </div>
+    <button type="button" class="btn btn-ghost btn-sm" id="btn-names-corrupt-reveal">
+      <svg class="icon"><use href="#i-folder"></use></svg> Mở thư mục
+    </button>
+  </div>
+
+  <!-- Sau khi lưu bảng tên của một phim đã chạy: mời chạy lại ngay (hợp đồng H3),
+       thay cho lời khuyên cũ "chọn lại file rồi bấm Bắt đầu". -->
+  <div class="banner banner-info banner-wrap names-banner" id="names-rerun" role="status" hidden>
+    <svg class="icon"><use href="#i-refresh"></use></svg>
+    <div>
+      <b id="names-rerun-title">Đã lưu bảng tên.</b>
+      <div class="banner-sub" id="names-rerun-sub"></div>
+    </div>
+    <button type="button" class="btn btn-primary btn-sm" id="btn-names-rerun">
+      <svg class="icon"><use href="#i-refresh"></use></svg> Chạy lại với bảng tên mới
+    </button>
+  </div>
+
+  <div class="names-actionbar">
+    <button type="button" class="btn btn-ghost" id="btn-names-add"><svg class="icon"><use href="#i-plus"></use></svg> Thêm tên</button>
+    <span class="toolbar-gap"></span>
+    <span class="savebar-status" id="names-status"></span>
+    <button type="button" class="btn btn-primary" id="btn-names-save">Lưu bảng tên</button>
+  </div>
+
+  <div id="names-wrap"><!-- js --></div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- TAB 5 — CÀI ĐẶT                                                        -->
+<!-- ===================================================================== -->
+<section class="panel" id="tab-settings" role="tabpanel" aria-labelledby="tabbtn-settings" hidden>
+
+  <div class="pagehead">
+    <h1 class="pagehead-title">Cài đặt</h1>
+    <p class="pagehead-sub">Đặt một lần rồi dùng mãi. Không chắc mục nào thì cứ để nguyên.</p>
+  </div>
+
+  <!-- Hai cột: cột trái đứng yên (mục lục + nút Lưu), cột phải cuộn theo trang.
+       KHÔNG đặt grid thẳng lên #tab-settings: app.js bật/tắt tab bằng
+       .panel.is-active { display:block } nên phải có một lớp bọc riêng ở giữa. -->
+  <div class="settings-layout">
+    <aside class="settings-rail">
+      <nav class="settings-toc" aria-label="Mục trong Cài đặt">
+        <a class="toc-link is-current" href="#set-g-ai"><svg class="icon"><use href="#i-key"></use></svg> Khoá API và dịch</a>
+        <a class="toc-link" href="#set-g-run"><svg class="icon"><use href="#i-cpu"></use></svg> Máy nghe và chia dòng</a>
+        <a class="toc-link" href="#set-g-files"><svg class="icon"><use href="#i-folder"></use></svg> File và giao diện</a>
+        <a class="toc-link" href="#set-g-tools"><svg class="icon"><use href="#i-ok"></use></svg> Kiểm tra máy và bảo trì</a>
+      </nav>
+      <div class="savebar">
+        <span class="savebar-status" id="settings-status"></span>
+        <button type="button" class="btn btn-primary btn-lg" id="btn-save-settings">Lưu cài đặt</button>
+      </div>
+    </aside>
+
+    <div class="settings-body">
+
+      <section class="settings-group" id="set-g-ai">
+        <div class="settings-group-head"><h2 class="settings-group-title">Khoá API và dịch</h2><span class="settings-group-note">Đặt một lần</span></div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-key"></use></svg> Khoá API cho trợ lý AI và dịch</h3>
+          <p class="card-sub">
+            Một khoá dùng cho cả <b>soát tên riêng</b> lẫn <b>dịch tiếng Việt</b>.
+            Để trống vẫn chạy được, nhưng phần dịch dùng bản miễn phí của Google, chất lượng thấp hơn hẳn.
+          </p>
+          <div class="field">
+            <label class="field-label" for="set-apikey">Khoá API Gemini</label>
+            <div class="input-row">
+              <input type="password" id="set-apikey" class="input" placeholder="Dán khoá vào đây" autocomplete="off" spellcheck="false">
+              <button type="button" class="btn btn-quiet btn-icon" id="btn-toggle-key" aria-label="Hiện hoặc ẩn khoá">
+                <svg class="icon"><use href="#i-eye"></use></svg>
+              </button>
+              <button type="button" class="btn btn-ghost" id="btn-test-key">Kiểm tra key</button>
+            </div>
+            <p class="field-help">Bấm <b>Kiểm tra key</b> để thử xem khoá dùng được không. Ô để trống thì tool thử khoá đang lưu, không cần dán lại.</p>
+            <p class="field-status" id="key-status"></p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="set-aimodel">Model AI (Gemini)</label>
+            <input type="text" id="set-aimodel" class="input" placeholder="gemini-2.5-flash" spellcheck="false" autocomplete="off">
+            <p class="field-help">Để trống là dùng <code>gemini-2.5-flash</code>. Không chắc thì để trống.</p>
+          </div>
+          <div class="field">
+            <label class="field-label" for="set-translator">Dịch tiếng Việt bằng</label>
+            <select id="set-translator" class="select select-wide">
+              <option value="auto">Tự chọn — có khoá thì dùng Gemini, không thì dùng bản miễn phí</option>
+              <option value="gemini">Gemini (chất lượng cao nhất, cần khoá API)</option>
+              <option value="google_free">Google miễn phí (không cần khoá, chất lượng thấp hơn)</option>
+              <option value="null">Không dịch</option>
+            </select>
+            <p class="field-help" id="translator-help"></p>
+          </div>
+          <details class="moreinfo">
+            <summary>Chọn model khác</summary>
+            <div class="moreinfo-body">
+              <p>Model này dùng cho ba việc: dịch tiếng Việt, soát tên riêng, và nút Kiểm tra key.</p>
+              <p><code>gemini-2.5-flash</code> dịch có ngữ cảnh tốt. Tier 1 cho 10.000 yêu cầu mỗi ngày — dư cho hàng trăm video.</p>
+              <p>Muốn nhanh và rẻ hơn thì gõ <code>gemini-3.1-flash-lite</code>.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <section class="settings-group" id="set-g-run">
+        <div class="settings-group-head"><h2 class="settings-group-title">Máy nghe và chia dòng</h2><span class="settings-group-note">Quyết định nhanh hay chậm</span></div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-cpu"></use></svg> Chất lượng gỡ băng</h3>
+          <p class="card-sub">
+            Đây là thứ quyết định máy chạy nhanh hay chậm. Thời gian ghi bên dưới tính cho một video dài 40 phút trên iMac 2017.
+          </p>
+          <div class="model-list" id="model-list-settings"><!-- js --></div>
+          <p class="field-help" id="model-note-settings"></p>
+          <details class="moreinfo">
+            <summary>Model chưa tải thì sao?</summary>
+            <div class="moreinfo-body">
+              <p>Model đã tải chạy được ngay.</p>
+              <p>Model chưa tải sẽ tự tải về trong lần chạy đầu tiên. Mất thêm vài phút, và chỉ một lần duy nhất.</p>
+              <p>Muốn tải sẵn bây giờ thì bấm <b>Tải về</b> ở dòng model đó.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-play"></use></svg> Âm thanh và định dạng</h3>
+          <label class="check"><input type="checkbox" id="set-demucs"><span><b>Tách giọng khỏi nhạc nền (dành cho phim nhiều nhạc)</b><em>Máy nghe rõ lời hơn khi nhạc nền lấn tiếng, nhưng <b>làm chậm khoảng 2 lần</b>. Chỉ bật khi bản gỡ băng sai nhiều.</em></span></label>
+          <label class="check"><input type="checkbox" id="set-ass"><span><b>Xuất thêm bản .ass cho Aegisub</b><em>Cùng nội dung với file .srt, đã đặt sẵn font hiển thị được chữ Hán và dấu thanh.</em></span></label>
+          <label class="check"><input type="checkbox" id="set-bilingual" checked><span><b>Xuất bản song ngữ để soát (<code>_song-ngu.ass</code>)</b><em>Ba tầng chữ trên một dòng: Hán, pinyin, tiếng Việt. Đây là file bạn mở trong Aegisub khi soát lại. Nên để bật.</em></span></label>
+          <label class="check"><input type="checkbox" id="set-bom" checked><span><b>Ghi file kèm dấu nhận dạng UTF-8 (BOM)</b><em>Giữ bật. Tắt đi thì một số phần mềm trên Windows sẽ hiện chữ Hán thành ký tự lạ.</em></span></label>
+          <div class="field">
+            <label class="field-label" for="set-profile">Kiểu nội dung mặc định</label>
+            <select id="set-profile" class="select select-wide">
+              <option value="drama">Phim / phim ngắn — thoại nhanh, câu ngắn</option>
+              <option value="news">Tin tức / phóng sự — nói chậm và đều, câu dài hơn</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-group" id="set-g-files">
+        <div class="settings-group-head"><h2 class="settings-group-title">File và giao diện</h2><span class="settings-group-note">Lưu ở đâu, nhìn thế nào</span></div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-folder"></use></svg> Nơi lưu file</h3>
+          <div class="field">
+            <label class="field-label" for="set-outdir">Thư mục lưu kết quả</label>
+            <div class="input-row">
+              <input type="text" id="set-outdir" class="input" placeholder="Để trống = dùng thư mục mặc định của chương trình" spellcheck="false">
+              <button type="button" class="btn btn-ghost" id="btn-open-outdir"><svg class="icon"><use href="#i-folder"></use></svg> Mở</button>
+            </div>
+            <p class="field-help" id="outdir-help">Ba file kết quả (<code>.srt</code>, <code>.bundle.json</code>, <code>.report.html</code>) đều được ghi vào đây.</p>
+          </div>
+          <div class="field">
+            <span class="field-label">Thư mục làm việc tạm</span>
+            <p class="field-help mono" id="workdir-value">—</p>
+            <p class="field-help">Chứa kết quả từng bước để chạy tiếp khi bị đứt giữa chừng. Không cần đụng tới.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-settings"></use></svg> Giao diện</h3>
+          <div class="field">
+            <label class="field-label" for="set-theme">Màu nền</label>
+            <select id="set-theme" class="select select-wide">
+              <option value="auto">Theo hệ thống</option>
+              <option value="light">Luôn sáng</option>
+              <option value="dark">Luôn tối</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <section class="settings-group" id="set-g-tools">
+        <div class="settings-group-head"><h2 class="settings-group-title">Kiểm tra máy và bảo trì</h2><span class="settings-group-note">Khi có trục trặc</span></div>
+
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-cpu"></use></svg> Kiểm tra máy</h3>
+          <p class="card-sub">Chạy một lượt xem máy đã đủ thứ cần thiết chưa. Thiếu gì thì bấm nút bên cạnh dòng đó.</p>
+          <div class="toolbar toolbar-flat">
+            <button type="button" class="btn btn-primary" id="btn-doctor"><svg class="icon"><use href="#i-ok"></use></svg> Kiểm tra máy</button>
+          </div>
+          <div id="doctor-out" class="doctor"><!-- js --></div>
+        </div>
+
+        <!-- Năm nút hành động. Việc chạy lâu (ffmpeg, yt-dlp, model) hiện thanh chạy
+             và nhật ký chứ không bấm xong rồi im lặng. -->
+        <div class="card">
+          <h3 class="card-title"><svg class="icon"><use href="#i-settings"></use></svg> Công cụ và trợ giúp</h3>
+          <p class="card-sub">
+            Những việc bảo trì hay dùng, gom về một chỗ. Ba nút đầu chạy vài phút và có thanh tiến trình.
+          </p>
+          <div class="actiongrid">
+            <button type="button" class="btn btn-ghost" id="btn-install-ffmpeg">
+              <svg class="icon"><use href="#i-download"></use></svg> Cài ffmpeg vào chương trình
+            </button>
+            <button type="button" class="btn btn-ghost" id="btn-update-ytdlp">
+              <svg class="icon"><use href="#i-refresh"></use></svg> Cập nhật yt-dlp
+            </button>
+            <button type="button" class="btn btn-ghost" id="btn-download-model">
+              <svg class="icon"><use href="#i-download"></use></svg> Tải model gỡ băng đang chọn
+            </button>
+            <button type="button" class="btn btn-ghost" id="btn-open-output">
+              <svg class="icon"><use href="#i-folder"></use></svg> Mở thư mục kết quả
+            </button>
+            <!-- Thẻ <a> thật chứ không nhờ máy chủ mở file .md: máy không có app đọc .md
+                 thì trước đây báo "Đã mở" mà không có gì hiện ra. /guide là trang HTML. -->
+            <a class="btn btn-ghost" id="btn-open-guide" href="/guide" target="_blank" rel="noopener"
+               title="Bản hướng dẫn đầy đủ trên một trang riêng, tiện để in ra hoặc gửi cho người khác. Bản đọc nhanh nằm ở tab Hướng dẫn.">
+              <svg class="icon"><use href="#i-book"></use></svg> Bản hướng dẫn đầy đủ (để in)
+            </a>
+          </div>
+          <details class="moreinfo">
+            <summary>Ba thứ này là gì?</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li><b>ffmpeg</b> — phần giúp máy đọc được file video.</li>
+                <li><b>yt-dlp</b> — phần tải video từ YouTube. YouTube hay đổi nên thỉnh thoảng phải cập nhật.</li>
+                <li><b>Model gỡ băng</b> — phần máy dùng để nghe. Tải một lần rồi dùng mãi.</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================================================================== -->
+<!-- TAB 6 — HƯỚNG DẪN                                                      -->
+<!-- Viết cho người không rành máy tính: câu ngắn, mỗi câu một việc, gọi đúng -->
+<!-- tên nút như trên màn hình. Đổi nhãn một nút ở chỗ khác thì phải sửa cả ở -->
+<!-- đây — tests/test_guide_tab.py kiểm các nhãn quan trọng nhất.            -->
+<!-- ===================================================================== -->
+<section class="panel" id="tab-guide" role="tabpanel" aria-labelledby="tabbtn-guide" hidden>
+
+  <div class="pagehead">
+    <h1 class="pagehead-title">Hướng dẫn</h1>
+    <p class="pagehead-sub">Đọc từ trên xuống là dùng được. Mỗi phần chỉ nói một việc, và gọi đúng tên nút bạn thấy trên màn hình.</p>
+  </div>
+
+  <div class="settings-layout guide-layout">
+    <aside class="settings-rail">
+      <nav class="settings-toc" aria-label="Mục lục hướng dẫn">
+        <a class="toc-link is-current" href="#g-tong-quan"><svg class="icon"><use href="#i-book"></use></svg> SrtGen làm gì</a>
+        <a class="toc-link" href="#g-mo-tat"><svg class="icon"><use href="#i-play"></use></svg> Mở và tắt</a>
+        <a class="toc-link" href="#g-tao"><svg class="icon"><use href="#i-create"></use></svg> Tạo phụ đề</a>
+        <a class="toc-link" href="#g-sua"><svg class="icon"><use href="#i-edit"></use></svg> Soát và sửa</a>
+        <a class="toc-link" href="#g-phim-tat"><svg class="icon"><use href="#i-keyboard"></use></svg> Phím tắt</a>
+        <a class="toc-link" href="#g-kiem-tra"><svg class="icon"><use href="#i-check-file"></use></svg> Kiểm tra file</a>
+        <a class="toc-link" href="#g-ten-rieng"><svg class="icon"><use href="#i-names"></use></svg> Tên riêng</a>
+        <a class="toc-link" href="#g-cai-dat"><svg class="icon"><use href="#i-key"></use></svg> Mã API và cài đặt</a>
+        <a class="toc-link" href="#g-file"><svg class="icon"><use href="#i-folder"></use></svg> File nhận được</a>
+        <a class="toc-link" href="#g-cai-may"><svg class="icon"><use href="#i-download"></use></svg> Cài lên máy khác</a>
+        <a class="toc-link" href="#g-truc-trac"><svg class="icon"><use href="#i-warn"></use></svg> Khi gặp trục trặc</a>
+        <a class="toc-link" href="#g-tu-ngu"><svg class="icon"><use href="#i-info"></use></svg> Giải thích từ ngữ</a>
+      </nav>
+    </aside>
+
+    <div class="settings-body guide-body">
+
+      <!-- ============================================================ 1 -->
+      <section class="settings-group" id="g-tong-quan">
+        <div class="settings-group-head"><h2 class="settings-group-title">SrtGen làm gì</h2></div>
+        <div class="card">
+          <p class="guide-lead">SrtGen <b>nghe</b> một video tiếng Trung và <b>viết ra phụ đề</b> cho bạn. Mỗi câu có ba phần: chữ Hán, pinyin (cách đọc) và câu dịch tiếng Việt.</p>
+          <p>Máy làm phần nặng nhọc. Việc của bạn là <b>xem lại và sửa</b> những chỗ máy nghe nhầm, rồi bấm Lưu.</p>
+
+          <ol class="guide-flow" aria-label="Bốn bước làm một phim">
+            <li><b>Dán link</b><span>link YouTube hoặc file video</span></li>
+            <li><b>Chờ máy nghe</b><span>khoảng 15–20 phút cho video 40 phút</span></li>
+            <li><b>Soát và sửa</b><span>vừa xem video vừa sửa chữ</span></li>
+            <li><b>Lưu</b><span>ra hai file phụ đề để giao đi</span></li>
+          </ol>
+
+          <div class="banner banner-info">
+            <svg class="icon"><use href="#i-info"></use></svg>
+            <div>SrtGen chạy <b>ngay trên máy của bạn</b>, không gửi video đi đâu. Chỉ có hai việc cần mạng: tải video từ YouTube, và dịch sang tiếng Việt.</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ 2 -->
+      <section class="settings-group" id="g-mo-tat">
+        <div class="settings-group-head"><h2 class="settings-group-title">Mở và tắt SrtGen</h2></div>
+        <div class="card">
+          <h3 class="card-title">Mở</h3>
+          <ol class="guide-steps">
+            <li>Bấm đúp vào biểu tượng <b>SrtGen</b> trên màn hình nền.</li>
+            <li>Hai thứ hiện ra. Một <b>cửa sổ chữ đen</b>: đó là phần máy chạy ngầm. Và một <b>trang web</b>: đó là chỗ bạn làm việc.</li>
+            <li>Làm việc trên trang web. <b>Đừng đóng cửa sổ chữ đen</b> khi đang dùng.</li>
+          </ol>
+
+          <h3 class="card-title">Tắt</h3>
+          <p>Đóng cửa sổ chữ đen. Máy hỏi bằng tiếng Anh <i>"Do you want to terminate running processes?"</i>. Bấm <b>Terminate</b> (máy để tiếng Việt thì là <b>Chấm dứt</b>). Đây là câu hỏi bình thường, không phải lỗi.</p>
+
+          <details class="moreinfo">
+            <summary>Lỡ đóng trang web thì sao?</summary>
+            <div class="moreinfo-body">
+              <p>Không sao. Máy vẫn chạy tiếp trong cửa sổ chữ đen. Bấm đúp lại biểu tượng <b>SrtGen</b> là trang web mở lại, và việc đang làm dở vẫn hiện đúng chỗ cũ.</p>
+            </div>
+          </details>
+          <details class="moreinfo">
+            <summary>Lần đầu bấm biểu tượng, máy hỏi "SrtGen muốn điều khiển Terminal"</summary>
+            <div class="moreinfo-body">
+              <p>Bấm <b>OK</b>. Không có bước này thì biểu tượng không mở được app. Chỉ hỏi một lần.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================ 3 -->
+      <section class="settings-group" id="g-tao">
+        <div class="settings-group-head"><h2 class="settings-group-title">Tạo phụ đề</h2></div>
+        <div class="card">
+          <h3 class="card-title">Từ link YouTube</h3>
+          <ol class="guide-steps">
+            <li>Mở tab <b>Tạo phụ đề</b>.</li>
+            <li>Trên YouTube, chép đường link của video. Dán vào ô lớn ở giữa trang.</li>
+            <li>Bấm <b>Bắt đầu</b>.</li>
+            <li>Chờ. Màn hình hiện 10 bước, bước nào xong thì có dấu ✓. Bước 3 <b>Nghe và gỡ băng</b> là lâu nhất.</li>
+          </ol>
+          <p>Trong lúc chờ, bạn cứ làm việc khác. Chỉ đừng tắt máy và đừng đóng cửa sổ chữ đen. Muốn huỷ thì bấm nút <b>Dừng</b>.</p>
+
+          <h3 class="card-title">Từ file video hoặc file âm thanh trong máy</h3>
+          <p>Kéo file thả vào ô lớn ở giữa tab <b>Tạo phụ đề</b>, hoặc bấm <b>Chọn file từ máy</b>. Rồi bấm <b>Bắt đầu</b>. Nhận được mp4, mov, mkv, mp3, m4a, wav và nhiều loại khác.</p>
+
+          <h3 class="card-title">Khi máy làm xong</h3>
+          <p>Màn hình hiện mấy nút lớn. Nút bạn cần nhất là <b>Xem trước và sửa</b>: nó mở thẳng phim vừa làm vào bàn làm việc.</p>
+          <table class="guide-table">
+            <tbody>
+              <tr><th>Xem trước và sửa</th><td>Mở phim vào bàn làm việc để soát. <b>Nên bấm nút này trước.</b></td></tr>
+              <tr><th>Mở thư mục</th><td>Mở chỗ chứa các file vừa tạo.</td></tr>
+              <tr><th>Tải file .srt / _vi.srt</th><td>Tải một bản về thư mục Tải về. Không bắt buộc: file đã nằm sẵn trong thư mục kết quả.</td></tr>
+              <tr><th>Làm video khác</th><td>Quay về ô dán link để làm phim tiếp theo.</td></tr>
+            </tbody>
+          </table>
+
+          <details class="moreinfo">
+            <summary>Mất bao lâu?</summary>
+            <div class="moreinfo-body">
+              <p>Trên iMac 2017, với cách nghe mặc định:</p>
+              <ul>
+                <li>Video 10 phút: khoảng 4–6 phút.</li>
+                <li>Video 40 phút: khoảng 15–20 phút.</li>
+                <li>Video 60 phút: khoảng 22–30 phút.</li>
+              </ul>
+              <p>Lần chạy đầu tiên sau khi cài có thể lâu hơn vài phút, vì máy còn phải tải bộ nghe về. Chỉ tải một lần.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================ 4 -->
+      <section class="settings-group" id="g-sua">
+        <div class="settings-group-head"><h2 class="settings-group-title">Soát và sửa phụ đề</h2></div>
+
+        <div class="card">
+          <h3 class="card-title">Mở phụ đề để sửa</h3>
+          <p>Có ba đường vào, chọn đường nào cũng được:</p>
+          <ul class="guide-list">
+            <li>Vừa làm xong một phim: bấm <b>Xem trước và sửa</b> ở màn hình kết quả.</li>
+            <li>Mở lại phim làm hôm trước: vào tab <b>Sửa phụ đề</b>, bấm nút <b>Mở lại “tên phim”</b>.</li>
+            <li>Có sẵn file .srt người khác gửi: vào tab <b>Sửa phụ đề</b>, bấm <b>Chọn file .srt…</b>. Muốn sửa cả tiếng Việt thì chọn cùng lúc hai file <code>TenPhim.srt</code> và <code>TenPhim_vi.srt</code> (giữ phím ⌘ khi bấm chọn file thứ hai).</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Màn hình bàn làm việc</h3>
+          <p>Màn hình chia làm năm vùng. Số trên hình khớp với số ở danh sách bên dưới.</p>
+
+          <div class="guide-map" role="img" aria-label="Sơ đồ màn hình bàn làm việc: video ở góc trên bên trái, dạng sóng ngay dưới video, bảng các dòng ở bên phải, dải sửa dòng trải ngang dưới cùng, nút Lưu ở góc trên bên phải.">
+            <div class="gm-top"><span>Tên phim</span><span class="gm-save"><i>5</i> Lưu</span></div>
+            <div class="gm-video"><i>1</i> Video<small>có phụ đề chạy trên hình</small></div>
+            <div class="gm-wave"><i>2</i> Dạng sóng</div>
+            <div class="gm-table"><i>3</i> Bảng các dòng<small>mỗi hàng là một câu</small>
+              <span class="gm-row"></span><span class="gm-row is-on"></span><span class="gm-row"></span><span class="gm-row"></span>
+            </div>
+            <div class="gm-edit"><i>4</i> Dải sửa dòng<small>Tiếng Trung · Pinyin · Tiếng Việt, và các nút</small></div>
+          </div>
+
+          <ol class="guide-legend">
+            <li><b>Video.</b> Phát đúng đoạn của câu đang chọn, có phụ đề chạy trên hình để bạn thấy câu chữ khớp với lời nói chưa. Nút <b>Thu nhỏ / Phóng to</b> đổi cỡ khung video.</li>
+            <li><b>Dạng sóng.</b> Hình gợn sóng của tiếng nói. Chỗ sóng cao là có người đang nói. Vùng màu xanh là thời gian của câu đang chọn.</li>
+            <li><b>Bảng các dòng.</b> Toàn bộ phụ đề, mỗi hàng một câu. Bấm vào hàng nào là chọn câu đó.</li>
+            <li><b>Dải sửa dòng.</b> Ba ô để sửa câu đang chọn, cùng các nút nghe, thêm, tách, gộp, xoá.</li>
+            <li><b>Lưu.</b> Ghi lại mọi chỗ bạn đã sửa vào file.</li>
+          </ol>
+
+          <h3 class="card-title">Màu của các hàng trong bảng</h3>
+          <table class="guide-table guide-colors">
+            <tbody>
+              <tr><th><span class="gc gc-sel"></span> Nền xanh</th><td>Câu bạn đang chọn.</td></tr>
+              <tr><th><span class="gc gc-err"></span> Nền đỏ nhạt</th><td>Câu có lỗi cách viết (dấu câu, khoảng trắng, chữ Hán và pinyin không khớp). Xem lời giải thích ngay dưới hàng đó.</td></tr>
+              <tr><th><span class="gc gc-flag"></span> Nền vàng nhạt</th><td>Máy chưa chắc chắn (tên riêng, chữ có nhiều cách đọc). Nên nghe lại.</td></tr>
+              <tr><th><span class="gc gc-ok">✓</span> Dấu ✓ cạnh số</th><td>Câu bạn đã soát xong.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Cách soát nhanh nhất: làm theo nhịp</h3>
+          <p>Mỗi câu làm đúng bốn việc, lặp lại cho tới hết phim:</p>
+          <ol class="guide-steps">
+            <li><b>Nghe.</b> Chọn một câu. Video tự phát đúng đoạn của câu đó.</li>
+            <li><b>Nhìn.</b> So chữ trên màn hình với lời người nói.</li>
+            <li><b>Sửa</b> nếu sai: gõ thẳng vào ô <b>Tiếng Trung</b>, <b>Pinyin</b> hoặc <b>Tiếng Việt</b>.</li>
+            <li><b>Sang câu sau:</b> bấm <b>✓ Xong, dòng sau</b>, hoặc nhấn <kbd>Ctrl</kbd> + <kbd>Enter</kbd>. Câu vừa rồi được đánh dấu ✓.</li>
+          </ol>
+
+          <div class="banner banner-info">
+            <svg class="icon"><use href="#i-info"></use></svg>
+            <div>
+              <b>Sửa chữ Hán thì pinyin có tự đổi không?</b>
+              <div class="banner-sub">Không tự đổi, để khỏi xoá mất pinyin bạn đã sửa tay. Sửa xong chữ Hán, bấm <b>Sinh lại pinyin</b> ngay trên ô Pinyin. Muốn dịch lại câu tiếng Việt thì bấm <b>Dịch lại câu này</b>.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" id="g-sua-them">
+          <h3 class="card-title">Máy bỏ sót một câu: thêm dòng mới</h3>
+          <p>Có lúc máy không nghe ra cả một câu (người nói nhỏ, hai người nói chồng lên nhau, nhạc to). Thêm câu đó vào như sau:</p>
+          <ol class="guide-steps">
+            <li>Chọn câu <b>đứng ngay trước</b> chỗ bị sót.</li>
+            <li>Cho video chạy tới đúng chỗ người ta bắt đầu nói câu bị sót, rồi bấm dừng.</li>
+            <li>Bấm <b>＋ Thêm dòng</b> (hoặc <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd>). Một dòng trống mới hiện ra, bắt đầu đúng ở chỗ video đang dừng.</li>
+            <li>Gõ chữ Hán vào ô <b>Tiếng Trung</b>. Gõ xong, pinyin <b>tự sinh ra</b>.</li>
+            <li>Gõ câu dịch vào ô <b>Tiếng Việt</b>.</li>
+            <li>Chỉnh lại thời gian cho khớp (xem phần ngay dưới).</li>
+          </ol>
+          <details class="moreinfo">
+            <summary>Máy báo "Không còn chỗ để chen dòng mới"</summary>
+            <div class="moreinfo-body">
+              <p>Hai câu đứng liền nhau, không còn khoảng trống nào ở giữa. Làm câu đứng trước <b>kết thúc sớm hơn</b> một chút: kéo mép phải của vùng xanh trên dạng sóng sang trái, rồi bấm lại <b>＋ Thêm dòng</b>.</p>
+            </div>
+          </details>
+          <details class="moreinfo">
+            <summary>Dòng mới chỉ có tiếng Việt, bấm Lưu thì máy hỏi lại</summary>
+            <div class="moreinfo-body">
+              <p>Mỗi câu phải có chữ Hán thì mới ghi ra file được. Nếu bạn lưu khi còn dòng chưa có chữ Hán, dòng đó sẽ bị bỏ. Máy hỏi lại để bạn không mất câu vừa gõ: bấm <b>Quay lại điền nốt</b> và gõ chữ Hán vào.</p>
+            </div>
+          </details>
+        </div>
+
+        <div class="card" id="g-sua-moc">
+          <h3 class="card-title">Chỉnh thời gian của một câu</h3>
+          <p>Mỗi câu có <b>thời điểm bắt đầu</b> và <b>thời điểm kết thúc</b>, hiện ở hai ô giờ trên dải sửa dòng, dạng <code>00:01:23,450</code> (giờ:phút:giây,phần nghìn giây). Có bốn cách chỉnh, dùng cách nào thấy tiện:</p>
+          <ol class="guide-legend">
+            <li><b>Theo video (dễ nhất).</b> Cho video chạy tới chỗ câu bắt đầu, bấm dừng, bấm <b>Bắt đầu = vị trí video</b>. Làm tương tự ở chỗ câu kết thúc với <b>Kết thúc = vị trí video</b>.</li>
+            <li><b>Kéo trên dạng sóng.</b> Đưa chuột vào mép trái hoặc mép phải của vùng xanh, giữ chuột và kéo.</li>
+            <li><b>Dịch nhẹ cả câu.</b> Bấm <b>−0,1s</b> để cả câu hiện sớm hơn một chút, <b>+0,1s</b> để hiện muộn hơn.</li>
+            <li><b>Gõ thẳng số.</b> Bấm vào ô giờ, sửa con số, nhấn <kbd>Enter</kbd>.</li>
+          </ol>
+          <p class="field-help">Mẹo: nếu thấy phụ đề hiện ra <b>trước</b> khi người ta mở miệng, câu đó bắt đầu quá sớm. Nếu chữ biến mất khi người ta còn đang nói, câu đó kết thúc quá sớm.</p>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Tách, gộp, xoá câu</h3>
+          <table class="guide-table">
+            <tbody>
+              <tr><th>Tách tại con trỏ</th><td>Một câu quá dài: bấm chuột vào ô Tiếng Trung, đặt con trỏ ở chỗ muốn cắt, rồi bấm nút này. Câu được cắt làm hai, thời gian cũng được chia ra.</td></tr>
+              <tr><th>Gộp với dòng sau</th><td>Hai câu ngắn thật ra là một: gộp câu đang chọn với câu ngay dưới nó.</td></tr>
+              <tr><th>Xoá dòng</th><td>Xoá câu đang chọn khỏi cả bản tiếng Trung lẫn tiếng Việt.</td></tr>
+            </tbody>
+          </table>
+          <p>Làm nhầm? Bấm nút <b>hoàn tác</b> (mũi tên cong quay lại, ở góc trên bên phải) hoặc nhấn <kbd>Ctrl</kbd> + <kbd>Z</kbd>.</p>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Tìm nhanh những câu cần xem</h3>
+          <p>Trên đầu bảng có các nút lọc. Bấm vào một nút là bảng chỉ hiện đúng nhóm câu đó:</p>
+          <table class="guide-table">
+            <tbody>
+              <tr><th>Có lỗi</th><td>Những câu đang có lỗi cách viết.</td></tr>
+              <tr><th>AI chưa duyệt</th><td>Những câu máy chưa chắc chắn, nên nghe lại.</td></tr>
+              <tr><th>Chưa có tiếng Việt</th><td>Những câu còn thiếu câu dịch.</td></tr>
+              <tr><th>Chưa soát</th><td>Những câu bạn chưa bấm ✓.</td></tr>
+              <tr><th>Tất cả</th><td>Hiện lại toàn bộ.</td></tr>
+            </tbody>
+          </table>
+          <p>Muốn tìm một chữ, gõ vào ô <b>Tìm chữ trong phụ đề…</b>. Muốn đổi một chữ ở tất cả các câu cùng lúc (ví dụ một tên bị viết sai cả phim), bấm nút kính lúp ở cạnh ô tìm để mở <b>Tìm và thay thế</b>.</p>
+        </div>
+
+        <div class="card">
+          <h3 class="card-title">Lưu</h3>
+          <ul class="guide-list">
+            <li>Bấm nút <b>Lưu</b> màu xanh ở góc trên bên phải.</li>
+            <li>Máy <b>tự giữ bản nháp</b> mỗi 5 giây. Lỡ đóng trang giữa chừng, mở lại sẽ thấy máy hỏi có muốn khôi phục phần đang sửa dở không.</li>
+            <li>Nếu mở file bằng nút <b>Chọn file .srt…</b>, nút Lưu sẽ ghi là <b>Lưu và tải về</b>: bản đã sửa được tải về thư mục Tải về của máy.</li>
+            <li>Lỡ sửa hỏng cả phim? Nút <b>Hoàn nguyên</b> đưa phụ đề về đúng bản máy tạo lúc đầu.</li>
+          </ul>
+
+          <div class="banner banner-err">
+            <svg class="icon"><use href="#i-warn"></use></svg>
+            <div>
+              <b>Thấy băng đỏ “File này có … đoạn, tool chỉ đọc được …”</b>
+              <div class="banner-sub">File .srt đó có dòng thời gian bị viết sai, nên máy đọc thiếu câu. <b>Đừng bấm Lưu</b>, vì bản lưu sẽ mất những câu bị đọc thiếu. Nhờ người gửi file kiểm tra lại, hoặc đưa file qua tab <b>Kiểm tra file</b> trước.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ============================================================ 5 -->
+      <section class="settings-group" id="g-phim-tat">
+        <div class="settings-group-head"><h2 class="settings-group-title">Phím tắt</h2></div>
+        <div class="card">
+          <p>Không bắt buộc phải nhớ. Nhưng quen rồi thì soát nhanh gấp đôi, vì tay không phải rời bàn phím. Bấm nút hình bàn phím ở góc trên bàn làm việc để xem lại bảng này bất cứ lúc nào.</p>
+          <table class="guide-table guide-keys">
+            <tbody>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>Enter</kbd></th><td>Đánh dấu ✓ đã soát, sang câu sau</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Enter</kbd></th><td>Thêm một dòng mới ngay sau câu đang chọn</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>↑</kbd> / <kbd>↓</kbd></th><td>Câu trước / câu sau</td></tr>
+              <tr><th><kbd>Shift</kbd> + <kbd>Space</kbd></th><td>Phát hoặc dừng video</td></tr>
+              <tr><th><kbd>←</kbd> / <kbd>→</kbd></th><td>Tua lùi / tua tới 2 giây (khi không gõ chữ)</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>[</kbd> / <kbd>]</kbd></th><td>Bắt đầu / kết thúc câu = vị trí video</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>L</kbd></th><td>Bật / tắt phát lặp lại câu đang chọn</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>H</kbd></th><td>Tìm và thay thế</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>Z</kbd></th><td>Hoàn tác thao tác vừa làm</td></tr>
+              <tr><th><kbd>Ctrl</kbd> + <kbd>S</kbd></th><td>Lưu</td></tr>
+            </tbody>
+          </table>
+          <p class="field-help">Trên máy Mac, dùng phím <b>control</b> (ghi chữ “control” ở góc dưới bên trái bàn phím) như trong bảng. Tổ hợp <kbd>Ctrl</kbd> + <kbd>Space</kbd> thường bị máy dùng để đổi bộ gõ tiếng Việt / tiếng Trung; khi đó hãy bấm nút <b>▶ Nghe dòng</b> thay cho phím tắt.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================ 6 -->
+      <section class="settings-group" id="g-kiem-tra">
+        <div class="settings-group-head"><h2 class="settings-group-title">Kiểm tra file người khác gửi</h2></div>
+        <div class="card">
+          <p>Dùng khi bên dịch gửi file .srt sang và bạn muốn biết file có đúng quy chuẩn không. Không cần video, chỉ mất vài giây.</p>
+          <ol class="guide-steps">
+            <li>Mở tab <b>Kiểm tra file</b>.</li>
+            <li>Kéo một hoặc nhiều file .srt thả vào ô lớn, hoặc bấm <b>Chọn file .srt</b>.</li>
+            <li>Mỗi file hiện thành một thẻ. Bấm <b>Chỉ kiểm tra</b> để xem lỗi, hoặc <b>Sửa và tải về</b> để máy tự sửa những lỗi sửa được.</li>
+          </ol>
+          <p><b>File gốc của bạn không bị thay đổi.</b> Bản đã sửa được tải về thư mục Tải về. File có thêm dòng tiếng Việt thì bạn nhận <b>hai</b> file: nhớ giữ cả hai.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================ 7 -->
+      <section class="settings-group" id="g-ten-rieng">
+        <div class="settings-group-head"><h2 class="settings-group-title">Bảng tên riêng</h2></div>
+        <div class="card">
+          <p>Tên nhân vật, địa danh thường bị máy viết mỗi chỗ một kiểu. Ghi tên vào bảng <b>một lần</b>, cả phim sẽ dùng đúng một cách viết, cả tiếng Trung lẫn tiếng Việt.</p>
+          <ol class="guide-steps">
+            <li>Mở tab <b>Tên riêng</b>. Ở ô <b>Phim</b>, chọn phim cần sửa.</li>
+            <li>Bấm <b>Thêm tên</b>. Điền ba cột:
+              <ul>
+                <li><b>Chữ Hán</b>: tên viết bằng chữ Hán, các cụm cách nhau một dấu cách, ví dụ <span class="zh">陈 路周</span>.</li>
+                <li><b>Pinyin</b>: cách đọc, cùng số cụm, ví dụ <b>Chén Lùzhōu</b>.</li>
+                <li><b>Tên tiếng Việt</b>: tên bạn muốn thấy trong câu dịch, ví dụ <b>Trần Lộ Châu</b>. Để trống thì máy tự phiên âm.</li>
+              </ul>
+            </li>
+            <li>Bấm <b>Lưu bảng tên</b>.</li>
+            <li>Muốn áp bảng tên cho phim đã làm xong: ở màn hình kết quả, bấm <b>Chạy lại với bảng tên mới</b>. Máy chỉ làm lại phần chữ, không phải nghe lại video.</li>
+          </ol>
+        </div>
+      </section>
+
+      <!-- ============================================================ 8 -->
+      <section class="settings-group" id="g-cai-dat">
+        <div class="settings-group-head"><h2 class="settings-group-title">Mã API và cài đặt</h2></div>
+        <div class="card">
+          <h3 class="card-title">Mã API là gì, có cần không?</h3>
+          <p><b>Mã API</b> là một dãy ký tự dài, giống như mật khẩu, cho phép SrtGen dùng trí tuệ nhân tạo Gemini của Google để dịch.</p>
+          <ul class="guide-list">
+            <li><b>Không có mã:</b> SrtGen vẫn chạy đủ. Câu tiếng Việt được dịch bằng Google miễn phí, dịch rời từng câu, tên nhân vật hay bị viết lung tung.</li>
+            <li><b>Có mã:</b> câu dịch hay hơn hẳn, hiểu mạch phim, xưng hô và tên nhân vật thống nhất từ đầu tới cuối.</li>
+          </ul>
+
+          <h3 class="card-title">Lấy mã API và dán vào</h3>
+          <ol class="guide-steps">
+            <li>Mở trang <b>aistudio.google.com</b> trong trình duyệt, đăng nhập bằng tài khoản Gmail.</li>
+            <li>Bấm <b>Get API key</b> (Lấy mã API), rồi <b>Create API key</b> (Tạo mã). Chép dãy ký tự vừa hiện ra.</li>
+            <li>Trong SrtGen, mở tab <b>Cài đặt</b>. Dán mã vào ô <b>Khoá API Gemini</b>.</li>
+            <li>Bấm <b>Kiểm tra key</b>. Thấy dấu ✓ là xong, mã đã được lưu.</li>
+          </ol>
+          <div class="banner banner-warn">
+            <svg class="icon"><use href="#i-key"></use></svg>
+            <div>Giữ mã API như giữ mật khẩu: <b>đừng gửi cho người khác</b> hay dán lên nhóm chat.</div>
+          </div>
+
+          <h3 class="card-title">Những mục khác trong Cài đặt</h3>
+          <table class="guide-table">
+            <tbody>
+              <tr><th>Model AI (Gemini)</th><td>Chọn bộ AI nào để dịch. Để nguyên như đang có là được.</td></tr>
+              <tr><th>Dịch tiếng Việt bằng</th><td>Để <b>Tự chọn</b>. Có mã API thì máy dùng Gemini, không có thì dùng bản miễn phí.</td></tr>
+              <tr><th>Chất lượng gỡ băng</th><td>Để <b>Cân bằng (khuyên dùng)</b>. “Chính xác nhất” lâu gấp ba mà chỉ nhỉnh hơn một chút.</td></tr>
+              <tr><th>Nơi lưu file</th><td>Thư mục chứa phụ đề làm ra. Để trống thì máy dùng thư mục mặc định, đường dẫn thật hiện ngay dưới ô.</td></tr>
+              <tr><th>Kiểm tra máy</th><td>Máy tự soát xem đã đủ mọi thứ cần thiết chưa. Thiếu gì thì có nút sửa ngay bên cạnh.</td></tr>
+            </tbody>
+          </table>
+          <p>Đổi xong nhớ bấm <b>Lưu cài đặt</b>.</p>
+        </div>
+      </section>
+
+      <!-- ============================================================ 9 -->
+      <section class="settings-group" id="g-file">
+        <div class="settings-group-head"><h2 class="settings-group-title">Các file bạn nhận được</h2></div>
+        <div class="card">
+          <p>Mỗi phim làm xong cho ra mấy file cùng tên, nằm chung một thư mục. Bấm <b>Mở thư mục</b> ở màn hình kết quả để thấy chúng.</p>
+          <table class="guide-table">
+            <tbody>
+              <tr><th><code>TenPhim.srt</code></th><td>Chữ Hán + pinyin. <b>File giao đi.</b></td></tr>
+              <tr><th><code>TenPhim_vi.srt</code></th><td>Tiếng Việt, cùng thời gian với file trên. <b>File giao đi.</b></td></tr>
+              <tr><th><code>TenPhim_song-ngu.ass</code></th><td>Cả hai thứ tiếng trên cùng một màn hình. Chỉ để <b>soát bằng phần mềm Aegisub</b>, đừng giao đi.</td></tr>
+              <tr><th><code>TenPhim.report.html</code></th><td>Bản báo cáo, mở bằng trình duyệt để xem chỗ nào máy chưa chắc.</td></tr>
+              <tr><th><code>…truoc-…</code></th><td>File có chữ <b>truoc</b> trong tên là <b>bản cũ được cất lại</b> trước khi ghi đè. Không phải rác. Dùng khi muốn lấy lại bản trước.</td></tr>
+            </tbody>
+          </table>
+          <details class="moreinfo">
+            <summary>Soát bằng Aegisub thay vì bàn làm việc</summary>
+            <div class="moreinfo-body">
+              <p>Mở file <code>_song-ngu.ass</code> trong Aegisub để xem. Thấy câu nào sai thì ghi lại số thứ tự, rồi <b>sửa đúng câu đó trong tab Sửa phụ đề</b> và bấm Lưu.</p>
+              <p>Đừng xuất file từ Aegisub ra .srt để giao đi: bản đó không đúng quy chuẩn, và bản tiếng Việt sẽ lệch khỏi bản tiếng Trung.</p>
+              <p>Chữ Hán hiện thành ô vuông: trong Aegisub vào <b>Subtitle › Styles Manager</b>, đổi font sang <b>PingFang SC</b>.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================ 10 -->
+      <section class="settings-group" id="g-cai-may">
+        <div class="settings-group-head"><h2 class="settings-group-title">Cài SrtGen lên máy khác</h2></div>
+        <div class="card">
+          <p>Dùng khi muốn cài cho đồng nghiệp. Cần: máy Mac, mạng Internet, ổ đĩa trống ít nhất 8 GB, và khoảng 30 phút chờ. <b>Không cần mật khẩu máy, không cần biết gì về máy tính.</b></p>
+          <ol class="guide-steps">
+            <li>Tải file nén SrtGen về máy, bấm đúp để giải nén.</li>
+            <li>Mở thư mục vừa giải nén. <b>Bấm chuột phải</b> vào file <b>SrtGen.command</b>, chọn <b>Mở</b> (Open). Hộp thoại hiện ra, bấm <b>Mở</b> thêm lần nữa.</li>
+            <li>Cửa sổ chữ đen hiện ra. Khi được hỏi, cứ nhấn phím <kbd>Enter</kbd>.</li>
+            <li>Chờ tới khi thấy chữ <b>CÀI ĐẶT XONG</b>. Biểu tượng <b>SrtGen</b> xuất hiện trên màn hình nền.</li>
+          </ol>
+          <p>Xong. Từ giờ chỉ cần bấm đúp biểu tượng <b>SrtGen</b>. Thư mục vừa tải về có thể xoá.</p>
+
+          <details class="moreinfo">
+            <summary>Vì sao lần đầu phải bấm chuột phải, không bấm đúp?</summary>
+            <div class="moreinfo-body">
+              <p>Máy Mac chặn mọi file tải từ Internet cho tới khi bạn nói “tôi cho phép”. Bấm đúp thì hộp thoại chỉ có nút Huỷ. Bấm chuột phải rồi chọn Mở thì hộp thoại mới có nút Mở. Chỉ phải làm <b>một lần</b>.</p>
+            </div>
+          </details>
+          <details class="moreinfo">
+            <summary>Bấm chuột phải cũng không có nút Mở</summary>
+            <div class="moreinfo-body">
+              <ol>
+                <li>Mở <b>Cài đặt hệ thống</b> (System Settings), chọn <b>Quyền riêng tư &amp; Bảo mật</b> (Privacy &amp; Security).</li>
+                <li>Kéo xuống gần cuối, thấy một dòng nói về SrtGen.command. Bấm <b>Vẫn mở</b> (Open Anyway).</li>
+                <li>Quay lại bấm đúp vào SrtGen.command.</li>
+              </ol>
+            </div>
+          </details>
+          <details class="moreinfo">
+            <summary>Có bản SrtGen mới thì cập nhật thế nào?</summary>
+            <div class="moreinfo-body">
+              <p>Tải bản mới về, giải nén, rồi làm y như lần đầu: chuột phải vào <b>SrtGen.command</b>, chọn Mở. Máy tự nhận ra bản mới, cập nhật rồi mở app. Phụ đề, cài đặt và mã API của bạn giữ nguyên.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================ 11 -->
+      <section class="settings-group" id="g-truc-trac">
+        <div class="settings-group-head"><h2 class="settings-group-title">Khi gặp trục trặc</h2></div>
+        <div class="card">
+          <p>Hầu hết thông báo lỗi của SrtGen đều có sẵn một nút sửa hoặc lời khuyên ngay bên dưới. Đọc câu đó trước. Dưới đây là những chuyện hay gặp nhất.</p>
+
+          <details class="moreinfo">
+            <summary>Dán link YouTube mà máy báo lỗi</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li>Kiểm tra link có đúng là link video không (dạng <code>youtube.com/watch?v=…</code>). Chỉ dán <b>một</b> link.</li>
+                <li>Vào tab <b>Cài đặt</b>, mục <b>Công cụ và trợ giúp</b>, bấm <b>Cập nhật yt-dlp</b>. YouTube hay đổi cách chặn, bản mới thường chữa được.</li>
+                <li>Vẫn không được: tải video về máy bằng cách khác, rồi kéo file vào tab Tạo phụ đề.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Cột tiếng Việt vẫn còn chữ Hán, chưa được dịch</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li>Nhìn băng vàng trên đầu bàn làm việc: nó ghi lý do vì sao chưa dịch.</li>
+                <li>Kiểm tra mã API trong tab <b>Cài đặt</b> bằng nút <b>Kiểm tra key</b>.</li>
+                <li>Sửa xong, bấm <b>Dịch lại toàn bộ tiếng Việt</b> trên băng vàng. Máy chỉ dịch lại, không nghe lại video.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Máy báo mã API sai, hoặc hết lượt dùng</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li><b>Sai mã:</b> thường do chép thiếu một ký tự. Chép lại cả dãy từ trang aistudio.google.com rồi dán lại.</li>
+                <li><b>Hết lượt trong ngày:</b> chờ sang ngày hôm sau, hoặc dùng một mã API khác.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Không nghe được tiếng khi bấm ▶ Nghe dòng</summary>
+            <div class="moreinfo-body">
+              <p>File .srt mở từ máy thì không kèm video. Muốn vừa nghe vừa sửa, hãy làm phim đó từ tab <b>Tạo phụ đề</b>, rồi bấm <b>Xem trước và sửa</b>.</p>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Bấm biểu tượng SrtGen mà không có gì hiện ra</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li>Chờ khoảng 10 giây: máy cũ mở hơi chậm.</li>
+                <li>Có thể SrtGen đã đang chạy: tìm cửa sổ chữ đen hoặc thẻ SrtGen trong trình duyệt.</li>
+                <li>Vẫn không được: làm lại bước cài, bấm chuột phải vào <b>SrtGen.command</b> và chọn Mở. Nó sửa lại phần cài bị hỏng.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Máy chạy rất chậm</summary>
+            <div class="moreinfo-body">
+              <ul>
+                <li>Bước <b>Nghe và gỡ băng</b> vốn lâu nhất. Video 40 phút cần khoảng 10–15 phút cho riêng bước này.</li>
+                <li>Đóng bớt các phần mềm nặng khác đang mở.</li>
+                <li>Trong <b>Cài đặt</b>, kiểm tra <b>Chất lượng gỡ băng</b> đang là <b>Cân bằng (khuyên dùng)</b>, không phải “Chính xác nhất”.</li>
+              </ul>
+            </div>
+          </details>
+
+          <details class="moreinfo">
+            <summary>Cần nhờ người hỗ trợ</summary>
+            <div class="moreinfo-body">
+              <p>Chụp màn hình chỗ báo lỗi. Nếu thông báo lỗi có phần <b>Chi tiết kỹ thuật</b>, bấm mở ra rồi chép nội dung đó gửi kèm. Người hỗ trợ cần đúng phần đó để biết chuyện gì xảy ra.</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- ============================================================ 12 -->
+      <section class="settings-group" id="g-tu-ngu">
+        <div class="settings-group-head"><h2 class="settings-group-title">Giải thích từ ngữ</h2></div>
+        <div class="card">
+          <dl class="guide-terms">
+            <dt>Phụ đề</dt>
+            <dd>Chữ chạy dưới màn hình khi xem phim, ghi lại lời nhân vật nói.</dd>
+            <dt>File .srt</dt>
+            <dd>Loại file phụ đề phổ biến nhất. Mở được bằng hầu hết phần mềm xem phim và phần mềm dựng phim.</dd>
+            <dt>Pinyin</dt>
+            <dd>Cách viết cách đọc của chữ Hán bằng chữ cái Latin, có dấu thanh. Ví dụ <span class="zh">你好</span> đọc là <b>nǐhǎo</b>.</dd>
+            <dt>Cụm</dt>
+            <dd>Một nhóm chữ Hán đi liền nhau thành một từ. Trong phụ đề, các cụm cách nhau một dấu cách, và dòng pinyin phải có đúng số cụm như dòng chữ Hán.</dd>
+            <dt>Gỡ băng</dt>
+            <dd>Việc máy nghe tiếng nói trong video rồi viết lại thành chữ.</dd>
+            <dt>Mốc thời gian</dt>
+            <dd>Thời điểm một câu phụ đề hiện ra và biến mất trên màn hình.</dd>
+            <dt>Dạng sóng</dt>
+            <dd>Hình gợn sóng vẽ lại âm thanh. Sóng cao là tiếng to, sóng phẳng là im lặng.</dd>
+            <dt>Mã API</dt>
+            <dd>Dãy ký tự giống mật khẩu, cho phép SrtGen dùng dịch vụ AI của Google để dịch câu.</dd>
+            <dt>Model AI</dt>
+            <dd>Tên của bộ trí tuệ nhân tạo được dùng để dịch. Mỗi model nhanh, chậm, giỏi khác nhau.</dd>
+            <dt>Bản nháp</dt>
+            <dd>Bản máy tự giữ lại trong lúc bạn đang sửa, để lỡ đóng trang cũng không mất công.</dd>
+            <dt>Cửa sổ chữ đen (Terminal)</dt>
+            <dd>Cửa sổ hiện ra khi mở SrtGen. Đó là phần máy chạy ngầm. Đóng nó là tắt SrtGen.</dd>
+          </dl>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</section>
+
+</main>
+
+<div id="toasts" class="toasts" aria-live="polite" aria-atomic="false"></div>
+<div id="modal-root"></div>
+
+<script src="app.js" defer></script>
+</body>
+</html>

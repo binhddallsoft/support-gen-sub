@@ -1,0 +1,389 @@
+# ===========================================================================
+# srtgen — cấu hình mặc định
+#
+# Đây là NƠI DUY NHẤT chứa tham số của tool. Code không được hardcode giá trị nào
+# đã có mặt ở file này; muốn đổi thì đổi ở đây, hoặc dùng --profile / tham số dòng lệnh.
+#
+# Các con số ở mục "cue" KHÔNG phải ước lượng: chúng đo trực tiếp trên
+# corpus/completed.srt (1351 cue đã có người soát). Đừng chỉnh theo cảm tính,
+# chỉnh xong phải đo lại bằng tests/test_regression.py.
+#
+# Máy đích: iMac 2017, Core i7 4 nhân, 32GB RAM, macOS Intel, KHÔNG có GPU NVIDIA.
+# Vì vậy mọi mặc định về tốc độ đều tính cho CPU.
+# ===========================================================================
+
+version: 1
+
+# Bộ tham số mặc định, xem mục "profiles" ở cuối file.
+default_profile: drama
+
+# Ép chạy lại pipeline từ chặng này trở đi (0 = S0 fetch ... 8 = S8 emit).
+# 99 = lớn hơn mọi chặng = không ép, tận dụng hết kết quả cũ trong work/.
+# Lệnh "srtgen resume <video_id> --from s5" chỉ việc đặt giá trị này thành 5.
+force_from: 99
+
+# ---------------------------------------------------------------------------
+# Thư mục
+# Để rỗng = tool tự chọn thư mục chuẩn của hệ điều hành
+# (macOS: ~/Library/Application Support/SrtGen). Người dùng không phải biết chỗ này,
+# UI có nút "Mở thư mục" để mở bằng Finder.
+# ---------------------------------------------------------------------------
+paths:
+  work_dir: ""      # nơi chứa work/<video_id>/, các file S0..S8 để chạy tiếp giữa chừng
+  out_dir: ""       # nơi ghi .srt, .bundle.json, .report.html
+  names_dir: ""     # bảng tên riêng theo phim; rỗng = để cạnh work_dir
+
+# ---------------------------------------------------------------------------
+# S0 — tải nguồn (yt-dlp / ffmpeg)
+# 16kHz mono là đúng thứ Whisper cần; ép ngay từ đầu để khỏi convert lần hai.
+# ---------------------------------------------------------------------------
+fetch:
+  timeout: 900            # giây, cho mỗi lần gọi yt-dlp/ffmpeg; video dài cần nhiều
+  retries: 3              # số lần thử lại khi mạng chập chờn
+  retry_wait: 5           # giây, nghỉ giữa hai lần thử
+  ytdlp_format: bestaudio
+  audio_format: wav
+  sample_rate: 16000
+  channels: 1
+  keep_source: false      # true = giữ lại file tải về sau khi đã convert
+  preview_video: true     # tải bản có hình (mp4) để xem trước có phụ đề ngay trong app
+  preview_max_height: 720 # chiều cao tối đa của bản xem trước; 720 đủ nhìn chữ, nhẹ hơn 1080 nhiều
+
+# ---------------------------------------------------------------------------
+# S1 — tiền xử lý audio
+# demucs tách giọng khỏi nhạc nền: chất lượng tốt hơn hẳn với phim nhiều nhạc,
+# nhưng RẤT nặng trên CPU (có thể lâu hơn cả chặng ASR) nên mặc định tắt.
+# ---------------------------------------------------------------------------
+audio:
+  demucs: false
+  demucs_model: htdemucs
+  loudnorm: true          # ffmpeg loudnorm, chuẩn hoá âm lượng, rẻ và luôn có lợi
+  loudnorm_i: -16         # LUFS mục tiêu
+  loudnorm_tp: -1.5       # đỉnh thật tối đa (dBTP)
+  loudnorm_lra: 11        # dải động
+
+# ---------------------------------------------------------------------------
+# S2 — nghe và gỡ băng (faster-whisper)
+# Đây là chặng lâu nhất của cả pipeline. Đừng đổi device/compute_type nếu không
+# thật sự hiểu: máy đích không có GPU NVIDIA, "auto" sẽ chọn sai.
+#
+# Mặc định đổi từ "large-v3" sang "large-v3-turbo": số đo thật trên CPU int8 là
+# 5 phút audio hết 19.6 giây (turbo) so với 52.6 giây (large-v3) — nhanh ~2.7 lần,
+# RAM đỉnh 1545MB so với 2953MB, model tải về ~1.6GB thay vì ~3GB. Trên iMac 2017
+# điều này biến "video 40 phút chờ 35 phút" thành "chờ khoảng 10-15 phút".
+# Turbo là model CHỈ để gỡ băng (không dịch được) — không sao, vì việc dịch sang
+# tiếng Việt do chặng S8 lo bằng model ngôn ngữ, chất lượng cao hơn hẳn.
+# ---------------------------------------------------------------------------
+asr:
+  model: large-v3-turbo             # xem bảng "models" bên dưới; đổi ở đây hoặc trong tab Cài đặt
+  language: zh                      # ép cứng, không cho tự dò
+  beam_size: 5
+  vad_filter: true                  # chống ảo giác ở đoạn không có tiếng nói
+  vad_min_silence_ms: 500
+  condition_on_previous_text: false # tránh lặp vô hạn khi gặp đoạn khó
+  word_timestamps: true             # BẮT BUỘC, chặng S4 chia cue dựa vào đây
+  device: cpu                       # không đổi thành "auto" trên iMac Intel
+  compute_type: int8                # int8 = nhanh nhất trên CPU, chất lượng gần như không đổi
+  cpu_threads: 0                    # 0 = tự dò (số nhân vật lý, i7 2017 -> 4)
+  temperature: 0
+  no_speech_threshold: 0.6
+  download_root: ""                 # rỗng = thư mục cache chuẩn của hệ; ~1.6GB cho large-v3-turbo
+  # Hệ số ước lượng thời gian: 1 giây tiếng nói tốn ngần này giây máy chạy.
+  # Chỉ dùng cho model KHÔNG có trong bảng "models" bên dưới (bảng đó có eta_factor riêng),
+  # và chỉ dùng ở lúc mới bắt đầu — nghe được 20 giây audio là tool đo hệ số thật của máy này.
+  eta_factor: 0.3
+  # -------------------------------------------------------------------------
+  # Bảng model cho tab Cài đặt. UI đọc nguyên bảng này để vẽ danh sách chọn, nên
+  # thêm/bớt model thì sửa ở đây chứ đừng viết cứng trong giao diện.
+  #   id            tên model của faster-whisper
+  #   label         nhãn tiếng Việt hiện cho người dùng
+  #   eta_40min     ước tính cho VIDEO 40 PHÚT trên iMac 2017 Core i7 (không GPU)
+  #   download_size dung lượng phải tải về lần đầu
+  #   size_mb       cũng dung lượng đó nhưng bằng số, để vẽ % lúc tải và kiểm đĩa trống
+  #   eta_factor    hệ số ước lượng khởi tạo của riêng model đó (turbo nhanh ~2.7 lần large-v3)
+  # -------------------------------------------------------------------------
+  models:
+    - id: large-v3-turbo
+      label: "Cân bằng (khuyên dùng)"
+      eta_40min: "~10-15 phút"
+      download_size: "~1.6 GB"
+      size_mb: 1620
+      eta_factor: 0.3
+      recommended: true
+    - id: large-v3
+      label: "Chính xác nhất"
+      eta_40min: "~30-40 phút"
+      download_size: "~3 GB"
+      size_mb: 3090
+      eta_factor: 0.8
+      recommended: false
+    - id: medium
+      label: "Nhanh, độ chính xác vừa"
+      eta_40min: "~8-12 phút"
+      download_size: "~1.5 GB"
+      size_mb: 1530
+      eta_factor: 0.25
+      recommended: false
+    - id: small
+      label: "Thử nhanh"
+      eta_40min: "~4-6 phút"
+      download_size: "~0.5 GB"
+      size_mb: 484
+      eta_factor: 0.13
+      recommended: false
+  # Prompt mồi: Whisper bám theo phong cách và dấu câu trong đoạn này, nên nó phải là
+  # tiếng Trung giản thể và phải có đủ 。，？！ thì đầu ra mới có dấu câu để S4 chia cue.
+  # Tên riêng của phim được nối thêm vào cuối prompt này khi có names.json.
+  initial_prompt: "以下是一部中文短剧的字幕。他说：你怎么才来？我等了很久了！好，我们走吧，别急，慢慢来。"
+
+# ---------------------------------------------------------------------------
+# S3 — dọn kết quả ASR
+# ---------------------------------------------------------------------------
+cleanup:
+  to_simplified: true       # opencc t2s: Whisper hay trả phồn thể lẫn giản thể
+  drop_empty: true          # segment rỗng
+  drop_punct_only: true     # segment chỉ có dấu câu
+  repeat_similarity: 0.90   # hai segment giống nhau trên mức này thì coi là lặp ảo giác
+  repeat_max: 2             # lặp quá số lần này thì cắt bỏ và ghi log
+  min_words: 1
+
+# ---------------------------------------------------------------------------
+# S4 — chia cue  (ĐO TRÊN CORPUS, xem build-spec mục 7)
+#
+#   max_chars     18    max thực đo 17 Hán tự, p95 = 12
+#   max_duration  6.0   chỉ 8/1351 cue vượt 6 giây
+#   min_duration  0.25  min thực đo 0.24s; 175 cue ngắn hơn 0.8s -> KHÔNG được gộp
+#   min_gap       0.0   261 cue có gap đúng bằng 0, ép giãn ra là sai bản chuẩn
+#   silence_split 0.30  khoảng lặng dài hơn mức này thì được phép cắt
+#
+# Phân bố mục tiêu khi hiệu chỉnh lại: thời lượng med 1.32s / p95 2.92s;
+# Hán tự med 5 / p95 12; số cụm mỗi cue med 3 / p95 8.
+# ---------------------------------------------------------------------------
+cue:
+  max_chars: 18
+  max_duration: 6.0
+  min_duration: 0.25
+  min_gap: 0.0
+  silence_split: 0.30
+  # Thứ tự ưu tiên điểm cắt: sau dấu kết câu -> sau dấu ngắt -> khoảng lặng -> ép cắt.
+  break_after_end: "。？！"
+  break_after_pause: "，、"
+  speaker_marker: false   # v1 bỏ qua marker đổi người nói (Whisper không cho biết ai nói)
+
+# ---------------------------------------------------------------------------
+# S5 — tách từ và sinh pinyin
+# ---------------------------------------------------------------------------
+tokenize:
+  engine: jieba
+  userdict: true            # nạp names.json vào jieba.load_userdict
+  # Tầng HMM của jieba tự "đoán" ra từ mới cho những chữ nó chưa gặp, và trên phụ
+  # đề nó bịa ra từ không có thật: 我来中国 -> 我来 | 中国 (người soát tách 我 | 来),
+  # 光头强来了 -> 强来. Đo trên toàn corpus (raw.srt qua fix, so với completed.srt,
+  # 1312 cue sạch): BẬT HMM khớp dòng Hán 75.8% / pinyin 74.4%; TẮT HMM khớp
+  # 78.4% / 76.8%, cổng định dạng vẫn 0 lỗi. Chặng tách cụm (S5) và nút "Sinh lại
+  # pinyin cho câu này" dùng CHUNG khoá này, để hai nơi không tách một câu hai kiểu.
+  jieba_hmm: false
+  pinyin_style: TONE        # pinyin có dấu thanh, đúng như bản chuẩn
+  # Đa âm tự: token chứa các chữ này được gắn cờ HETERONYM để người (hoặc AI T2) duyệt lại.
+  heteronym_chars: "得着了长行还差数重分少相假干空乐"
+
+  # -------------------------------------------------------------------------
+  # BẢNG ƯU TIÊN ĐỌC — đây là NƠI DUY NHẤT chốt cách đọc cho phụ đề phim.
+  #
+  # Vì sao cần bảng này: pypinyin trả về cách đọc TỪ ĐIỂN, còn phụ đề phim cần
+  # cách đọc KHẨU NGỮ. Hai thứ đó lệch nhau ở một nhúm chữ, và mỗi lần lệch là
+  # một lần người biên tập phải sửa tay lại đúng chỗ họ vừa sửa hôm qua.
+  #
+  # Số liệu bên dưới đo trực tiếp trên corpus/completed.srt (1351 cue đã soát
+  # tay, 5242 cụm từ): sinh lại pinyin bằng tool rồi so từng cụm với bản người
+  # soát, chỉ còn 46 chỗ lệch và chúng gom về đúng mấy chữ dưới đây.
+  #
+  # KHÔNG đưa vào bảng này những chữ mà cách đọc phụ thuộc ngữ cảnh thật sự —
+  # 得 (děi 6 lần / dé 3 lần), 着 (zhe 11 / zhuó 1), 要 (yào 34 / yāo 1). Ép một
+  # cách đọc cho chúng là làm sai 1/3 số ca; việc của chúng là hàng đợi
+  # HETERONYM ở trên, để người hoặc AI T2 chọn theo từng câu.
+  # 不 và 一 cũng không thuộc đây: chúng do mục "sandhi" bên dưới lo.
+  #
+  #   always  áp cho chữ này ở MỌI vị trí, kể cả khi nằm trong cụm dài hơn
+  #   exact   chỉ áp khi cụm CHỈ có đúng chuỗi này
+  # -------------------------------------------------------------------------
+  reading_prefs:
+    always:
+      谁: "shéi"   # corpus: 13/13 lần shéi, 0 lần shuí. shuí là cách đọc sách vở.
+      嗯: "ǹg"     # corpus: 10/10 lần ǹg. pypinyin mặc định trả "ń".
+    exact:
+      # Đứng một mình thì 地 là trợ từ trạng ngữ, đọc "de" (corpus 6/6:
+      # "认真 地 告诉", "狠狠 地 赢"). Nằm trong cụm dài thì vẫn là "dì"
+      # (地图 = dìtú, 地方 = dìfāng) nên chữ này KHÔNG được đặt ở "always".
+      地: "de"
+
+# 儿化音 — phải gộp ở tầng tokenizer, không đi sửa chuỗi về sau.
+# 哪儿 -> nǎr (KHÔNG phải nǎér). Corpus ghi nǎér là lỗi của corpus, README mới là hợp đồng.
+erhua:
+  enabled: true
+  contract: true
+
+# Biến điệu. Đây là quy ước nội bộ, không có chuẩn tuyệt đối — giá trị dưới đây
+# đặt theo đúng thói quen của corpus: 不是 -> búshì (bật), 一条 -> yītiáo (tắt).
+# Đo trên corpus: bù×100, bú×41, yī×66, yì×44, yí×32, yǐ×20.
+sandhi:
+  bu: true
+  yi: false
+  third_tone: false
+
+# ---------------------------------------------------------------------------
+# S6 — chuẩn hoá dấu câu và khoảng trắng
+# Mọi thao tác làm trên token rồi mới render, nên ở đây không có tuỳ chọn nào
+# về khoảng trắng: renderer tự bảo đảm không có space thừa.
+# ---------------------------------------------------------------------------
+normalize:
+  ascii_to_chinese: true    # , . ? ! : ; -> ， 。 ？ ！ ： ；
+  smart_quotes: true        # "" '' <> () -> “” ‘’ 《》 （）, có theo dõi trạng thái đóng/mở
+  ellipsis: "……"            # ... và … đều quy về đúng dạng này
+  dash: "——"                # dấu ngắt lời; marker đổi người nói vẫn giữ "-" ASCII
+
+# Viết hoa đầu câu. Đo trên corpus: đúng 99.16% (1302/1313, đã trừ 37 ca sau "……").
+# ellipsis_default = upper|lower: cue trước kết bằng "……" là ca nhập nhằng thật sự
+# (tỉ lệ 54/46), tool chọn theo giá trị này rồi gắn cờ CASE_AMBIG cho người duyệt.
+casing:
+  ellipsis_default: upper
+  first_cue_upper: true     # cue đầu file luôn viết hoa
+  after_marker_upper: true  # ngay sau marker "-" là lượt thoại mới -> viết hoa
+  enders: "。？！”》）"        # cue trước kết bằng đây -> cue sau VIẾT HOA
+  continuers: "，、：；’"      # -> giữ chữ THƯỜNG
+
+# Tên riêng: luôn viết hoa bất kể vị trí, và phải tách nhất quán trong cả file.
+names:
+  auto_capitalize: true
+  file: names.json
+  merge_ai_result: true     # kết quả T1 của AI ghi đè bảng cũ (vẫn cho người sửa tay)
+
+# ---------------------------------------------------------------------------
+# S7 — tầng AI (đề xuất, không tự ghi file)
+# Mặc định TẮT: toàn bộ pipeline phải chạy được offline, không cần API key.
+# provider "null" = NullProvider, trả về rỗng, không gọi mạng.
+# ---------------------------------------------------------------------------
+ai:
+  enabled: false
+  provider: "null"                # null | gemini
+  model_t1: gemini-2.5-pro        # T1 tìm tên riêng: chỉ 1-2 lần gọi, đáng dùng model tốt
+  model_other: gemini-2.5-flash   # Tier 1: 10K yêu cầu/ngày, dư cho hàng trăm video; dịch có ngữ cảnh tốt hơn Flash Lite
+  batch_size: 25                  # số mục mỗi request (20-30), kèm cue lân cận làm ngữ cảnh
+  temperature: 0
+  timeout: 120                    # giây cho mỗi request
+  retries: 3                      # gặp 429 thì chờ tăng dần, không nhảy key ngay
+  cache: true                     # cache theo hash (dòng Hán, loại việc, model)
+  api_key: ""                     # để trống và dùng biến môi trường thì an toàn hơn
+  api_key_env: GEMINI_API_KEY
+  tasks:
+    t1_names: true                # tìm tên riêng toàn phim -> chạy lại S5. Đáng giá nhất.
+    t2_heteronym: true            # chọn âm cho đa âm tự
+    t3_case_after_ellipsis: true  # viết hoa nhập nhằng sau "……"
+    t4_end_punct: true            # bổ sung dấu kết câu còn thiếu
+
+# ---------------------------------------------------------------------------
+# S8 — dịch sang tiếng Việt
+# Mục đích cuối của tool: mỗi video giao HAI file, <title>.srt (tiếng Trung) và
+# <title>_vi.srt (tiếng Việt) khớp nhau từng cue, từng mốc thời gian.
+#
+# provider:
+#   auto        có API key Gemini thì dùng Gemini, không có thì dùng Google miễn phí
+#   gemini      ép dùng Gemini (dùng chung ô API key với phần soát tên riêng ở "ai")
+#   google_free ép dùng bản miễn phí của Google — không cần đăng ký, nhưng chất
+#               lượng kém hơn rõ rệt vì dịch từng câu rời, không có ngữ cảnh
+#   "null"      trả nguyên văn tiếng Trung; dùng để chạy offline và cho test
+#
+# batch_size / context_window là thứ làm nên chất lượng: gửi cả lô cho model dịch
+# một lượt, kèm mấy cue trước và sau chỉ để đọc lấy ngữ cảnh (không dịch lại),
+# nhờ vậy xưng hô và tên nhân vật mới nhất quán suốt cả tập phim.
+# ---------------------------------------------------------------------------
+translate:
+  enabled: true
+  target: vi
+  provider: auto          # auto | gemini | google_free | null
+  batch_size: 25
+  context_window: 5       # số cue trước/sau gửi kèm làm ngữ cảnh
+  model: ""
+  retries: 2              # lô nào trả sai chỉ số cue thì gửi lại ngần này lần
+  cache: true             # nhớ theo (câu Hán, ngôn ngữ đích, model, bảng tên riêng)
+
+# ---------------------------------------------------------------------------
+# S9 — xuất file
+# BOM là bắt buộc để Aegisub và các editor trên Windows đọc đúng tiếng Trung.
+# newline: lf | crlf  (bản chuẩn dùng lf)
+# ---------------------------------------------------------------------------
+emit:
+  bom: true
+  newline: lf
+  ass_export: false           # thêm bản .ass cho Aegisub, cùng nội dung
+  bilingual_ass: true         # xuất <title>_song-ngu.ass cho Aegisub
+  bundle: true                # <title>.bundle.json cho backend
+  report: true                # <title>.report.html, tiếng Việt
+  ass_font: PingFang SC       # font hiển thị được cả Hán lẫn dấu thanh pinyin trên macOS
+  ass_font_size: 42
+  fail_on_error: false        # false = vẫn ghi file khi có lỗi, nhưng UI báo đỏ và report liệt kê
+
+# ---------------------------------------------------------------------------
+# Giao diện web
+# ---------------------------------------------------------------------------
+ui:
+  host: 127.0.0.1
+  port: 0                 # 0 = tự tìm cổng trống
+  open_browser: true
+  language: vi
+
+# ---------------------------------------------------------------------------
+# Máy chủ web — giới hạn nhận file
+# ---------------------------------------------------------------------------
+web:
+  # Dung lượng tối đa, tính bằng BYTE, của MỘT file âm thanh/video kéo thả vào ô
+  # chính. 4294967296 byte = 4 GB, đủ cho một tập phim 1080p dài.
+  # File nặng hơn bị chặn ngay ở trình duyệt, trước khi mất công đưa lên, kèm câu
+  # báo bằng tiếng Việt (giao diện đọc số này qua /api/health).
+  # Muốn nhận file nặng hơn thì tăng số này, ví dụ 8589934592 = 8 GB. Nhớ rằng file
+  # đưa vào được chép một bản vào thư mục làm việc, nên ổ đĩa cần trống thêm ít
+  # nhất bằng dung lượng file đó.
+  # Mức này KHÁC mức 20 MB cố định dành cho file .srt ở tab "Kiểm tra file".
+  max_media_bytes: 4294967296
+
+# ===========================================================================
+# profiles — bộ tham số theo thể loại, gộp đè lên phần trên.
+# Chọn bằng: srtgen run <link> --profile news
+# ===========================================================================
+profiles:
+
+  # Phim ngắn / phim truyền hình: thoại nhanh, cue ngắn, nhiều câu cảm thán.
+  # Đây là bộ đã hiệu chỉnh theo corpus, cũng là mặc định.
+  drama:
+    cue:
+      max_chars: 18
+      max_duration: 6.0
+      min_duration: 0.25
+      min_gap: 0.0
+      silence_split: 0.30
+    sandhi:
+      bu: true
+      yi: false
+    casing:
+      ellipsis_default: upper
+    asr:
+      initial_prompt: "以下是一部中文短剧的字幕。他说：你怎么才来？我等了很久了！好，我们走吧，别急，慢慢来。"
+
+  # Tin tức / phóng sự: người dẫn nói chậm và đều, câu dài hơn, gần như không có
+  # cue 0.25 giây, nên nới các ngưỡng ra cho cue bớt vụn.
+  news:
+    cue:
+      max_chars: 24
+      max_duration: 7.0
+      min_duration: 0.60
+      min_gap: 0.04
+      silence_split: 0.40
+    sandhi:
+      bu: true
+      yi: false
+    casing:
+      ellipsis_default: upper
+    audio:
+      loudnorm: true
+    asr:
+      initial_prompt: "以下是一段普通话新闻播报的字幕。今天，有关部门在北京举行会议。他表示：这项工作非常重要！你准备好了吗？"
