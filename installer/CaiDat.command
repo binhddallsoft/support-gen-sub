@@ -553,7 +553,7 @@ else
     tai_va_giai_nen() {
         local ten="$1" dia_chi="$2" tam
         tam="$(mktemp -d "${TMPDIR:-/tmp}/srtgen-$ten-XXXXXX")" || return 1
-        tin "Đang tải $ten…"
+        tin "Đang tải ${ten}…"
         if ! curl -fL --retry 3 --retry-delay 3 --max-time 900 \
              -o "$tam/$ten.zip" "$dia_chi" 2>/dev/null; then
             rm -rf "$tam"; return 1
@@ -701,7 +701,7 @@ GIAITHICHMODEL
     if [ -z "$MODEL_CHON" ]; then
         nhac "Chưa tải mô hình. Lần đầu tạo phụ đề, app sẽ tự tải và báo tiến trình."
     else
-        tin "Đang chuẩn bị mô hình “$MODEL_CHON”. Nếu phải tải, sẽ có thanh tiến trình."
+        tin "Đang chuẩn bị mô hình “${MODEL_CHON}”. Nếu phải tải, sẽ có thanh tiến trình."
         echo
         TRANG_THAI=0
         # PYTHONIOENCODING: khi app được mở từ biểu tượng trên Desktop, macOS
@@ -786,7 +786,7 @@ PYCODE
         echo
         case "$TRANG_THAI" in
             0)
-                ok "Mô hình “$MODEL_CHON” đã sẵn sàng trong máy."
+                ok "Mô hình “${MODEL_CHON}” đã sẵn sàng trong máy."
                 ghi_xong "6-model"
                 ;;
             3)
@@ -802,9 +802,9 @@ PYCODE
 
         if [ -n "$MODEL_CHON" ] && [ "$MODEL_CHON" != "$MODEL_MAC_DINH" ]; then
             echo
-            nhac "Bạn chọn “$MODEL_CHON”, nhưng app mặc định dùng “$MODEL_MAC_DINH”."
-            tin "Sau khi mở app, vào tab Cài đặt và chọn đúng mô hình “$MODEL_CHON”,"
-            tin "nếu không app sẽ tải thêm “$MODEL_MAC_DINH” ở lần chạy đầu tiên."
+            nhac "Bạn chọn “${MODEL_CHON}”, nhưng app mặc định dùng “${MODEL_MAC_DINH}”."
+            tin "Sau khi mở app, vào tab Cài đặt và chọn đúng mô hình “${MODEL_CHON}”,"
+            tin "nếu không app sẽ tải thêm “${MODEL_MAC_DINH}” ở lần chạy đầu tiên."
         fi
     fi
 fi

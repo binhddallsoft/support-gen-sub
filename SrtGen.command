@@ -93,7 +93,14 @@ van_tay() {
 # "bấm lại SrtGen.command để sửa" trong tab Hướng dẫn thành nói sai.
 # `find_spec` chỉ dò chỗ của thư viện, không nạp nó, nên mất chưa tới một giây
 # kể cả trên iMac 2017.
+#
+# Thêm điều kiện thứ hai, rút ra từ một lần cài thật trên iMac: bộ cài dừng ở
+# bước 5 (ffmpeg) SAU KHI bước 4 đã cài đủ thư viện. Chỉ kiểm thư viện thì lần
+# bấm lại sẽ mở thẳng app — không có ffmpeg, không có mô hình nghe, không có biểu
+# tượng trên màn hình nền. File cai-dat.json chỉ được CaiDat.command ghi ở dòng
+# cuối cùng, nên có nó nghĩa là bộ cài đã chạy hết từ đầu tới cuối.
 da_cai() {
+    [ -f "$APP_SUPPORT/cai-dat.json" ] || return 1
     [ -x "$VPY" ] || return 1
     "$VPY" -c 'import importlib.util as u, sys
 sys.exit(0 if all(u.find_spec(m) for m in ("srtgen", "fastapi", "uvicorn", "jieba", "faster_whisper", "yt_dlp")) else 1)' 2>/dev/null
@@ -176,7 +183,7 @@ for muc in $CAN_CHEP; do
     if ! ditto "$NGUON/$muc" "$TAM/$muc" 2>/dev/null; then
         rm -rf "$TAM" 2>/dev/null || true
         dung_lai \
-            "Không chép được “$muc” vào máy." \
+            "Không chép được “${muc}” vào máy." \
             "" \
             "Ổ đĩa có thể đã đầy, hoặc thư mục tải về đang nằm ở nơi không đọc được" \
             "(ổ USB, ổ mạng). Hãy chép cả thư mục vào Desktop rồi bấm lại file này."

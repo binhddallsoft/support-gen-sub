@@ -90,3 +90,48 @@ def test_goi_phat_hanh_co_file_khoi_dong() -> None:
     mr = (ROOT / "tools" / "make_release.py").read_text(encoding="utf-8")
     assert '"SrtGen.command"' in mr.split("INCLUDE_FILES", 1)[1].split("\n", 1)[0]
     assert '"SrtGen.command",' in mr.split("REQUIRED = (", 1)[1].split(")", 1)[0]
+
+
+# --------------------------------------------------------------------------- #
+# Lỗi đo được trên iMac thật, 15-09-2026
+# --------------------------------------------------------------------------- #
+
+import re  # noqa: E402
+
+TAT_CA_FILE_BASH = [LAUNCHER, *sorted((ROOT / "installer").glob("*.command"))]
+
+#: Tên biến viết trần ($ten) đứng DÍNH ngay trước một ký tự không phải ASCII.
+_BIEN_DINH_CHU = re.compile(rb"\$([A-Za-z_][A-Za-z0-9_]*)(?=[\x80-\xff])")
+
+
+@pytest.mark.parametrize("path", TAT_CA_FILE_BASH, ids=lambda p: p.name)
+def test_ten_bien_khong_dinh_lien_chu_tieng_viet(path: Path) -> None:
+    """``tin "Đang tải $ten…"`` làm bộ cài dừng hẳn ở bước 5 trên iMac thật.
+
+    Bash 3.2 có sẵn trên macOS đọc byte đầu tiên của ``…`` (hay một chữ tiếng
+    Việt có dấu) như một phần của tên biến, đi tìm biến tên ``ten?`` không tồn tại,
+    và vì file bật ``set -u`` nên dừng với lỗi ``ten?: unbound variable``. Bash mới
+    trên Windows/Linux đọc đúng, nên chạy thử ở đó không thấy lỗi. Luôn viết
+    ``${ten}`` khi ngay sau tên biến là một ký tự không phải ASCII.
+    """
+    b = path.read_bytes()
+    loi = []
+    for m in _BIEN_DINH_CHU.finditer(b):
+        dong = b.count(b"\n", 0, m.start()) + 1
+        ten = m.group(1).decode()
+        loi.append(f"dòng {dong}: ${ten} phải viết thành ${{{ten}}}")
+    assert not loi, "\n".join(loi)
+
+
+def test_da_cai_nghia_la_bo_cai_da_chay_toi_cuoi(src: str) -> None:
+    """Bộ cài dừng ở bước 5 sau khi bước 4 đã cài đủ thư viện. Chỉ kiểm thư viện
+    thì bấm lại sẽ mở thẳng app thiếu ffmpeg và mô hình nghe."""
+    start = src.index("da_cai() {")
+    body = src[start : start + 500]
+    assert "cai-dat.json" in body
+    cai_dat = (ROOT / "installer" / "CaiDat.command").read_text(encoding="utf-8")
+    assert 'RECEIPT="$APP_SUPPORT/cai-dat.json"' in cai_dat
+    assert cai_dat.rindex('cat > "$RECEIPT"') > cai_dat.rindex("buoc "), (
+        "hồ sơ cai-dat.json phải được ghi SAU bước cuối cùng của bộ cài"
+    )
+
