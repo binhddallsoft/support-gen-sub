@@ -51,3 +51,27 @@ def test_qua_tron_s5_s6_khong_dung_viec(raw: str, word: str) -> None:
     assert "-" not in words and "'" not in words
     for line in (cue.zh_text(), cue.py_text()):
         assert sum(1 for t in tokenize_line(line) if t.kind == KIND_WORD) == len(words), line
+
+
+def test_thu_muc_lam_viec_cu_van_chay_tiep_duoc() -> None:
+    """Chạy lại cùng video dùng lại S5 đã lưu từ TRƯỚC bản sửa, còn ``-`` là một từ.
+    S6 phải tự vá, không thì việc đó dừng ở đúng chỗ cũ mãi mãi."""
+    def w(zh: str, py: str | None) -> Token:
+        return Token(kind=KIND_WORD, zh=zh, pinyin=py, source="jieba")
+
+    old = [w("bye", "bye"), w("-", "-"), w("bye", "bye"), w("原来", "yuánlái"), w("是", "shì"), w("你", "nǐ")]
+    doc = Document(cues=[Cue(index=29, start=221.99, end=223.41, tokens=old)])
+    normalize_document(doc)
+
+    cue = doc.cues[0]
+    assert cue.zh_text().startswith("bye-bye 原来"), cue.zh_text()
+    assert cue.py_text().startswith("Bye-bye yuánlái"), cue.py_text()
+    assert doc.meta["s6"]["latin_words_rejoined"] == 1
+
+
+def test_hai_tu_tieng_anh_tach_bang_khoang_trang_van_la_hai_cum() -> None:
+    doc = Document(cues=[Cue(index=1, start=0.0, end=1.0, tokens=[Token(kind=KIND_WORD, zh="ok bye再见")])])
+    tokenize_document(doc)
+    normalize_document(doc)
+    words = [t.zh for t in doc.cues[0].tokens if t.kind == KIND_WORD]
+    assert words[:2] == ["ok", "bye"], words

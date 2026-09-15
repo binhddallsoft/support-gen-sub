@@ -80,6 +80,7 @@ __all__ = [
     "normalize_document",
     "normalize_punctuation",
     "prune_empty_tokens",
+    "rejoin_split_latin",
     "run",
     "verify_invariant",
 ]
@@ -366,6 +367,42 @@ def prune_empty_tokens(doc: Document) -> int:
     return removed
 
 
+def _han_edge(text: str, last: bool) -> bool:
+    ch = (text or " ")[-1 if last else 0]
+    return "㐀" <= ch <= "鿿" or "豈" <= ch <= "﫿" or "\U00020000" <= ch <= "\U0003134f"
+
+
+def rejoin_split_latin(doc: Document) -> int:
+    """Mend ``bye`` | ``-`` | ``bye`` back into one ``bye-bye`` token.
+
+    S5 now keeps these whole (``s5_tokenize._rejoin_latin``), but a work folder
+    tokenized before that fix still holds the lone ``-`` as a WORD, and re-running
+    the same video reuses that S5 file — so without this pass the job would stop
+    at the proof below again, forever.  Only a word token that reads back as no
+    word at all, wedged between two word tokens with non-Han edges, is merged.
+    """
+    mended = 0
+    for cue in doc.cues:
+        toks = cue.tokens
+        i = 1
+        while i + 1 < len(toks):
+            left, mid, right = toks[i - 1], toks[i], toks[i + 1]
+            if (
+                left.kind == mid.kind == right.kind == KIND_WORD
+                and mid.zh.strip()
+                and _cluster_count(mid.zh) == 0
+                and not _han_edge(left.zh, last=True)
+                and not _han_edge(right.zh, last=False)
+            ):
+                left.zh = left.zh + mid.zh + right.zh
+                left.pinyin = (left.pinyin or "") + (mid.pinyin or mid.zh) + (right.pinyin or right.zh)
+                del toks[i : i + 2]
+                mended += 1
+                continue
+            i += 1
+    return mended
+
+
 def _cluster_count(line: str) -> int:
     """How many word clusters a reader would count on ``line``.
 
@@ -427,6 +464,7 @@ def normalize_document(
 
     report_progress(on_progress, "Đang chuẩn hoá dấu câu…", 0.1)
     stop_if_cancelled(cancelled)
+    rejoined = rejoin_split_latin(doc)
     marks = normalize_punctuation(doc, cfg)                       # 1 + 2
 
     report_progress(on_progress, "Đang chỉnh viết hoa đầu câu…", 0.4)
@@ -447,6 +485,7 @@ def normalize_document(
         "punctuation_fixed": marks,
         "names_respelled": named,
         "empty_tokens_removed": removed,
+        "latin_words_rejoined": rejoined,
         "warnings": warnings,
     }
     return doc
