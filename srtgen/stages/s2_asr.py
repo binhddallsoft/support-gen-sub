@@ -772,10 +772,17 @@ def _ensure_model_available(
             )
 
         if attempt >= DOWNLOAD_ATTEMPTS:
+            # Ca thật trên iMac: mạng vẫn tải được video YouTube và thư viện Python,
+            # riêng huggingface.co (kho chứa mô hình) thì không vào được. Câu "kiểm
+            # tra kết nối Internet" chung chung khiến người dùng nhìn thấy mạng vẫn
+            # chạy mà không biết phải làm gì. Nói đúng tên trang và cách thử.
             raise AsrError(
-                f"Tải mô hình {name} không xong sau {DOWNLOAD_ATTEMPTS} lần thử.\n"
-                "Thường là do mất mạng hoặc mạng chặn. Hãy kiểm tra kết nối Internet rồi bấm "
-                "Bắt đầu lại — phần đã tải vẫn được giữ, không phải tải lại từ đầu.",
+                f"Tải mô hình {name} không xong sau {DOWNLOAD_ATTEMPTS} lần thử: máy không "
+                "kết nối được tới huggingface.co, trang chứa mô hình nhận dạng giọng nói.\n"
+                "Cách xử lý: mở https://huggingface.co bằng Safari trên chính máy này. "
+                "Nếu trang không mở được thì mạng nơi đặt máy đang chặn trang đó — hãy thử "
+                "mạng khác (Wi-Fi khác hoặc phát từ điện thoại) rồi bấm Bắt đầu lại. Phần "
+                "đã tải vẫn được giữ, không phải tải lại từ đầu.",
                 detail=f"{type(error).__name__}: {error}",
             ) from error
 

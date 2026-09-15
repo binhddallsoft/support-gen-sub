@@ -1403,7 +1403,7 @@ function onServerEvent(name, raw) {
     case 'done': case 'result': case 'finished':
       finishJob(data.result || data); break;
     case 'error': case 'failed':
-      failJob(data.error || data); break;
+      failJob(errorOf(data)); break;
     case 'cancelled': case 'canceled':
       cancelledJob(); break;
     default:
@@ -1416,6 +1416,27 @@ function onServerEvent(name, raw) {
 /** Bóc lớp {"job": {...}} nếu có. Máy chủ gói dữ liệu công việc vào khoá `job`
  *  ở hầu hết đường dẫn, nhưng bản cũ trả thẳng ra ngoài — nhận cả hai để giao
  *  diện không đứng im trong khi công việc vẫn chạy tốt ở nền. */
+/** Lấy đúng khối lỗi {message, detail, fix_action} từ mọi dạng máy chủ gửi.
+ *
+ *  Sự kiện "error" qua SSE có dạng {job_id, job: {status, message, error: {...}}}:
+ *  khối lỗi nằm trong `job`, KHÔNG nằm ở ngoài cùng. Bản trước đọc `data.error`,
+ *  không thấy, rồi đưa nguyên `data` cho màn hình lỗi — thế là mọi lỗi thật đều
+ *  hiện thành "Chương trình dừng lại vì một trục trặc chưa rõ", và phần "Chi tiết
+ *  kỹ thuật" cũng biến mất. Đo được trên iMac thật: tải mô hình hỏng vì mạng mà
+ *  người dùng không có một manh mối nào để biết. */
+function errorOf(data) {
+  if (!data || typeof data !== 'object') return {};
+  const job = data.job && typeof data.job === 'object' ? data.job : null;
+  const err = data.error || (job && job.error) || null;
+  if (err && typeof err === 'object') {
+    return Object.assign({}, err, {
+      message: err.message || err.user_message || (job && job.message) || data.message || ''
+    });
+  }
+  if (typeof err === 'string' && err) return { message: err };
+  return { message: (job && job.message) || data.message || '' };
+}
+
 function unwrapJob(data) {
   if (!data || typeof data !== 'object') return null;
   if (data.job && typeof data.job === 'object') {
@@ -1470,7 +1491,7 @@ function applyState(raw) {
 
   const status = String(data.status || '').toLowerCase();
   if (status === 'done' || status === 'finished' || status === 'success') { finishJob(data); return; }
-  if (status === 'error' || status === 'failed') { failJob(data.error || data); return; }
+  if (status === 'error' || status === 'failed') { failJob(errorOf(data)); return; }
   if (status === 'cancelled' || status === 'canceled') { cancelledJob(); return; }
 
   job.status = 'running';

@@ -112,3 +112,19 @@ def test_luu_phai_canh_bao_dong_khong_co_chu_han(source: str) -> None:
     body = source[start : start + 3000]
     assert "chưa có chữ Hán" in body, "luu im lang bo mat dong chi co tieng Viet"
 
+
+# --------------------------------------------------------------------------- #
+# Màn hình lỗi phải hiện câu lỗi thật
+# --------------------------------------------------------------------------- #
+
+
+def test_su_kien_loi_doc_khoi_loi_nam_trong_job(source: str) -> None:
+    """Sự kiện "error" qua SSE gửi {job_id, job: {error: {...}}}. Bản cũ đọc
+    `data.error` (không có), nên MỌI lỗi thật hiện thành "trục trặc chưa rõ" và
+    mất phần chi tiết kỹ thuật. Đo được trên iMac thật khi tải mô hình hỏng."""
+    assert "failJob(data.error || data)" not in source
+    start = source.index("function errorOf(")
+    body = source[start : start + 900]
+    assert "data.job" in body and "job.error" in body
+    assert source.count("failJob(errorOf(data))") >= 2
+
