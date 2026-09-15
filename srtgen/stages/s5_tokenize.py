@@ -967,6 +967,33 @@ def _keep_whole(text: str) -> list[str]:
     return [text]
 
 
+def _is_han_char(ch: str) -> bool:
+    return "㐀" <= ch <= "鿿" or "豈" <= ch <= "﫿" or "\U00020000" <= ch <= "\U0003134f"
+
+
+def _rejoin_latin(pieces: list[str]) -> list[str]:
+    """Glue back what jieba cut out of the middle of a Latin / digit run.
+
+    Step 1 keeps ``bye-bye``, ``Wi-Fi``, ``T-shirt``, ``don't`` as ONE word, and
+    the reader of the finished line counts them as one.  jieba does not know that
+    and returns ``["bye", "-", "bye"]``, so a lone ``-`` became a word of its
+    own; the renderer wrote ``bye - bye``, which reads back as punctuation, and
+    S6's proof stopped the whole run (seen on a real video, 15-09-2026).
+
+    Only a cut with a non-Han character on BOTH sides is undone.  Every cut next
+    to a Han character stays exactly where jieba put it, so ``bye-bye原`` still
+    ends as ``bye-bye`` + ``原`` and a dictionary cluster such as ``哆啦A梦`` keeps
+    its own boundaries.
+    """
+    out: list[str] = []
+    for piece in pieces:
+        if out and not _is_han_char(out[-1][-1]) and not _is_han_char(piece[0]):
+            out[-1] += piece
+        else:
+            out.append(piece)
+    return out
+
+
 def cut_words(tokens: Iterable[Token], cut: Callable[[str], list[str]]) -> list[Token]:
     """Step 2: replace each word token with jieba's segmentation of it.
 
@@ -981,7 +1008,7 @@ def cut_words(tokens: Iterable[Token], cut: Callable[[str], list[str]]) -> list[
         if tok.kind != KIND_WORD or not tok.zh.strip():
             out.append(tok)
             continue
-        pieces = [p for p in cut(tok.zh) if p.strip()]
+        pieces = _rejoin_latin([p for p in cut(tok.zh) if p.strip()])
         if len(pieces) <= 1:
             tok.source = SOURCE_JIEBA
             out.append(tok)
